@@ -616,7 +616,7 @@ function setLang(lang, el) {
   speechLang = lang;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
-  recognition = null; // force re-init with new lang on next tap
+  if (recognition) recognition.lang = lang;
 }
 
 function initSpeech() {
@@ -711,23 +711,32 @@ async function openAddFromSpeech() {
 // ══════════════════════════════════
 //  OPEN LIBRARY
 // ══════════════════════════════════
+function fetchWithTimeout(url, ms=3000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { signal: controller.signal })
+    .finally(() => clearTimeout(timer));
+}
+
+async function fetchDescription(key) {
+  try {
+    const wd = await (await fetchWithTimeout(`https://openlibrary.org${key}.json`, 3000)).json();
+    if (wd.description) {
+      const raw = typeof wd.description === 'string' ? wd.description : (wd.description.value || '');
+      return raw.replace(/\n/g,' ').split(/(?<=[.!?])\s+/).slice(0,3).join(' ');
+    }
+  } catch(_) {}
+  return '';
+}
+
 async function searchOpenLibrary(title, author='', fromSpeak=false) {
   const query = author ? `${title} ${author}` : title;
   try {
     const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,ratings_average,ratings_count,key`;
-    const data = await (await fetch(url)).json();
+    const data = await (await fetchWithTimeout(url, 6000)).json();
     if (data.docs && data.docs.length > 0) {
       const b = data.docs[0];
-      let description = '';
-      if (b.key) {
-        try {
-          const wd = await (await fetch(`https://openlibrary.org${b.key}.json`)).json();
-          if (wd.description) {
-            const raw = typeof wd.description === 'string' ? wd.description : (wd.description.value || '');
-            description = raw.replace(/\n/g,' ').split(/(?<=[.!?])\s+/).slice(0,3).join(' ');
-          }
-        } catch(_) {}
-      }
+      const description = b.key ? await fetchDescription(b.key) : '';
       openAddModal({
         title: b.title || title,
         author: (b.author_name||[]).join(', ') || author,
@@ -1118,10 +1127,16 @@ async function lookupFromForm() {
   const btn = document.getElementById('lookupBtn');
   btn.textContent = '⏳'; btn.disabled = true;
 
+  // Clear previous lookup's auto-filled data so new results replace it cleanly
+  document.getElementById('f-publisher').value = '';
+  document.getElementById('f-year').value = '';
+  document.getElementById('bookDescription').style.display = 'none';
+  document.getElementById('bookGRRating').style.display = 'none';
+
   try {
     const query = author ? `${title} ${author}` : title;
     const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,ratings_average,ratings_count,key`;
-    const data = await (await fetch(url)).json();
+    const data = await (await fetchWithTimeout(url, 6000)).json();
 
     if (data.docs && data.docs.length > 0) {
       const b = data.docs[0];
@@ -1133,16 +1148,7 @@ async function lookupFromForm() {
       if (!document.getElementById('f-year').value.trim())
         document.getElementById('f-year').value = b.first_publish_year || '';
 
-      let description = '';
-      if (b.key) {
-        try {
-          const wd = await (await fetch(`https://openlibrary.org${b.key}.json`)).json();
-          if (wd.description) {
-            const raw = typeof wd.description === 'string' ? wd.description : (wd.description.value || '');
-            description = raw.replace(/\n/g,' ').split(/(?<=[.!?])\s+/).slice(0,3).join(' ');
-          }
-        } catch(_) {}
-      }
+      const description = b.key ? await fetchDescription(b.key) : '';
 
       const descEl = document.getElementById('bookDescription');
       if (description) { descEl.textContent = description; descEl.style.display = 'block'; }
@@ -1160,7 +1166,7 @@ async function lookupFromForm() {
       showToast('No match found — check the title');
     }
   } catch(e) {
-    showToast('Network error — try again');
+    showToast('Network error or timeout — try again');
   }
 
   btn.textContent = '🔍 Look up'; btn.disabled = false;
@@ -1168,7 +1174,7 @@ async function lookupFromForm() {
 }
 
 
-function normalize(s) { return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function normalize(s) { return (s||'').toLowerCase().replace(/[^\p{L}0-9]/gu,''); }
 function ratingToStars(r) { const f=Math.round(r); return '★'.repeat(f)+'☆'.repeat(5-f); }
 function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
