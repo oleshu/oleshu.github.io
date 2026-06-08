@@ -690,34 +690,37 @@ async function captureAndSearch() {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(video, 0, 0, width, height);
 
-  setScanStatus('<span class="loader"></span> OCR Engine Initializing…');
+  setScanStatus('<span class="loader"></span> Reading cover text…');
   document.getElementById('captureBtn').disabled = true;
 
   try {
-    // Process text locally via Tesseract.js WebAssembly (works on iOS and Android)
+    // Run OCR directly on the main thread to completely bypass iOS/Android Web Worker blocks
     const result = await Tesseract.recognize(canvas, 'eng', {
-      logger: m => {
-        if (m.status === 'recognizing') {
-          setScanStatus(`<span class="loader"></span> Scanning Text: ${Math.round(m.progress * 100)}%`);
-        }
-      }
+      errorHandler: err => console.log(err)
     });
 
     const extractedText = result.data.text || '';
+    console.log("Scanned text:", extractedText);
     
-    if (extractedText.trim().length > 3) {
-      setScanStatus('<span class="loader"></span> Searching database…');
-      // Clean up string, grab first 3 text segments found on cover
-      const query = extractedText.split('\n').map(s => s.trim()).filter(s => s.length > 2).slice(0, 3).join(' ');
+    // Clean up text lines
+    const cleanLines = extractedText.split('\n')
+      .map(s => s.trim())
+      .filter(s => s.length > 3 && !/^[0-9\W]+$/.test(s)); // Ignore pure numbers/symbols
+
+    if (cleanLines.length > 0) {
+      setScanStatus('<span class="loader"></span> Searching library…');
+      // Take the most distinct line (usually the title) to search
+      const query = cleanLines.slice(0, 2).join(' ');
       await searchOpenLibrary(query, true);
     } else {
-      setScanStatus('⚠ No text detected. Adjust lighting and try again.');
+      setScanStatus('⚠ No readable words found. Try closer framing.');
       document.getElementById('captureBtn').disabled = false;
     }
   } catch (e) {
     console.error(e);
-    setScanStatus('⚠ OCR Processing error. Please fill in manually.');
+    setScanStatus('⚠ Engine initialization failed. Swapping to manual.');
     document.getElementById('captureBtn').disabled = false;
+    setTimeout(() => openManualAdd(), 1500);
   }
 }
 
