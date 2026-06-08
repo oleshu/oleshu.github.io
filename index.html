@@ -19,7 +19,6 @@
     --gold-light: #e8b84b;
     --rust: #8b3a2a;
     --sage: #4a6741;
-    --blue: #2a5a8b;
     --muted: #7a6e5f;
     --border: #d4c9b0;
     --card: #faf7f2;
@@ -94,7 +93,7 @@
   /* ── VIEWS ── */
   .view { display: none; padding: 16px; animation: fadeIn 0.2s ease; }
   .view.active { display: block; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
   /* ── SCAN VIEW ── */
   .scan-area {
@@ -110,200 +109,343 @@
     border: 2px dashed #3a2e1e;
     margin-bottom: 14px;
   }
-  #videoEl { width:100%; height:100%; object-fit:cover; display:none; }
-  .scan-placeholder { text-align:center; color:var(--muted); padding:20px; }
-  .scan-placeholder svg { margin-bottom:10px; opacity:0.4; }
-  .scan-placeholder p { font-size:0.85rem; line-height:1.5; }
-  #captureCanvas { display:none; }
-  .scan-corner { position:absolute; width:22px; height:22px; border-color:var(--gold); border-style:solid; opacity:0.8; }
-  .scan-corner.tl { top:10px; left:10px; border-width:2px 0 0 2px; }
-  .scan-corner.tr { top:10px; right:10px; border-width:2px 2px 0 0; }
-  .scan-corner.bl { bottom:10px; left:10px; border-width:0 0 2px 2px; }
-  .scan-corner.br { bottom:10px; right:10px; border-width:0 2px 2px 0; }
+  #videoEl {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .scan-placeholder {
+    text-align: center;
+    color: var(--muted);
+    padding: 20px;
+  }
+  .scan-placeholder svg { margin-bottom: 10px; opacity: 0.4; }
+  .scan-placeholder p { font-size: 0.85rem; line-height: 1.5; }
+
+  #captureCanvas { display: none; }
+
+  .scan-corner {
+    position: absolute;
+    width: 22px; height: 22px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.8;
+  }
+  .scan-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+  .scan-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+  .scan-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+  .scan-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
 
   /* ── BUTTONS ── */
   .btn {
-    width:100%; padding:13px; border:none; border-radius:8px;
-    font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:500;
-    cursor:pointer; transition:all 0.2s; margin-bottom:8px;
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
   }
-  .btn-primary { background:var(--gold); color:var(--ink); }
-  .btn-primary:hover { background:var(--gold-light); }
-  .btn-secondary { background:var(--cream); color:var(--ink); border:1px solid var(--border); }
-  .btn-danger { background:var(--rust); color:#fff; }
-  .btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .btn-primary { background: var(--gold); color: var(--ink); }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-secondary { background: var(--cream); color: var(--ink); border: 1px solid var(--border); }
+  .btn-danger { background: var(--rust); color: #fff; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* ── FORM ── */
-  .form-group { margin-bottom:13px; }
+  .form-group { margin-bottom: 13px; }
   label {
-    display:block; font-family:'DM Mono',monospace; font-size:0.65rem;
-    letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; margin-bottom:5px;
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 5px;
   }
   input[type=text], input[type=number], textarea, select {
-    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:7px;
-    background:var(--card); color:var(--ink); font-family:'DM Sans',sans-serif;
-    font-size:0.9rem; outline:none; transition:border-color 0.2s;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--card);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
   }
-  input:focus, textarea:focus, select:focus { border-color:var(--gold); }
-  textarea { resize:vertical; min-height:70px; }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 70px; }
 
-  /* ── TOGGLE BUTTON GROUPS ── */
-  .toggle-group { display:flex; gap:6px; flex-wrap:wrap; }
-  .toggle-btn {
-    flex:1; min-width:calc(25% - 6px); padding:9px 6px;
-    border:1px solid var(--border); border-radius:7px;
-    background:var(--card); color:var(--ink);
-    font-size:0.75rem; cursor:pointer; text-align:center;
-    transition:all 0.2s; white-space:nowrap;
+  .status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
-  /* Format colours */
-  .toggle-btn.fmt-physical  { background:var(--ink);  color:var(--parchment); border-color:var(--ink); }
-  .toggle-btn.fmt-digital   { background:var(--blue); color:#fff;             border-color:var(--blue); }
-  .toggle-btn.fmt-both      { background:#5a3a8b;     color:#fff;             border-color:#5a3a8b; }
-  .toggle-btn.fmt-not-owned { background:var(--rust); color:#fff;             border-color:var(--rust); }
-  /* Status colours */
-  .toggle-btn.sta-read      { background:var(--sage); color:#fff;             border-color:var(--sage); }
-  .toggle-btn.sta-reading   { background:var(--gold); color:var(--ink);       border-color:var(--gold); }
-  .toggle-btn.sta-not-read  { background:var(--cream);color:var(--ink);       border-color:var(--border); }
+  .status-btn {
+    padding: 9px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--card);
+    color: var(--ink);
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .status-btn.sel-read { background: var(--sage); color: #fff; border-color: var(--sage); }
+  .status-btn.sel-started { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .status-btn.sel-owned { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+  .status-btn.sel-not-owned { background: var(--rust); color: #fff; border-color: var(--rust); }
 
-  /* ── CARDS ── */
+  /* ── CARD ── */
   .book-card {
-    background:var(--card); border:1px solid var(--border); border-radius:10px;
-    padding:14px; margin-bottom:10px; cursor:pointer;
-    transition:all 0.2s; position:relative; overflow:hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
   }
-  .book-card:hover { border-color:var(--gold); box-shadow:0 3px 12px var(--shadow); }
+  .book-card:hover { border-color: var(--gold); box-shadow: 0 3px 12px var(--shadow); }
   .book-card::before {
-    content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
   }
-  .book-card.fmt-physical::before  { background:var(--ink); }
-  .book-card.fmt-digital::before   { background:var(--blue); }
-  .book-card.fmt-both::before      { background:#5a3a8b; }
-  .book-card.fmt-not-owned::before { background:var(--rust); }
+  .book-card.status-read::before { background: var(--sage); }
+  .book-card.status-started::before { background: var(--gold); }
+  .book-card.status-owned::before { background: var(--ink); }
+  .book-card.status-not-owned::before { background: var(--rust); }
 
   .book-card h3 {
-    font-family:'Playfair Display',serif; font-size:1rem;
-    margin-bottom:3px; padding-right:60px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    margin-bottom: 3px;
+    padding-right: 60px;
   }
-  .book-card .author { font-size:0.8rem; color:var(--muted); margin-bottom:6px; }
-  .book-meta { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-
-  /* ── BADGES ── */
+  .book-card .author {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .book-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
   .badge {
-    font-family:'DM Mono',monospace; font-size:0.6rem;
-    letter-spacing:0.05em; padding:3px 7px; border-radius:4px; text-transform:uppercase;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.05em;
+    padding: 3px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
   }
-  .badge-physical  { background:var(--ink);  color:var(--parchment); }
-  .badge-digital   { background:var(--blue); color:#fff; }
-  .badge-both      { background:#5a3a8b;     color:#fff; }
-  .badge-not-owned { background:var(--rust); color:#fff; }
-  .badge-read      { background:var(--sage); color:#fff; }
-  .badge-reading   { background:var(--gold); color:var(--ink); }
-  .badge-not-read  { background:var(--cream);color:var(--muted); border:1px solid var(--border); }
-  .badge-year      { background:var(--cream);color:var(--muted); border:1px solid var(--border); }
+  .badge-read { background: var(--sage); color: #fff; }
+  .badge-started { background: var(--gold); color: var(--ink); }
+  .badge-owned { background: var(--ink); color: var(--parchment); }
+  .badge-not-owned { background: var(--rust); color: #fff; }
+  .badge-year { background: var(--cream); color: var(--muted); border: 1px solid var(--border); }
+  .rating-stars { font-size: 0.7rem; color: var(--gold); }
 
-  /* ── FILTER BAR ── */
-  .filter-section { margin-bottom:6px; }
-  .filter-label {
-    font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.08em;
-    color:var(--muted); text-transform:uppercase; margin-bottom:5px;
+  /* ── LIBRARY FILTERS ── */
+  .filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
-  .filter-bar { display:flex; gap:5px; overflow-x:auto; padding-bottom:4px; margin-bottom:10px; }
-  .filter-bar::-webkit-scrollbar { display:none; }
+  .filter-bar::-webkit-scrollbar { display: none; }
   .filter-chip {
-    flex-shrink:0; padding:5px 11px; border:1px solid var(--border);
-    border-radius:20px; background:var(--card); color:var(--muted);
-    font-family:'DM Mono',monospace; font-size:0.62rem; letter-spacing:0.05em;
-    cursor:pointer; text-transform:uppercase; transition:all 0.2s;
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
   }
-  .filter-chip.active { background:var(--ink); color:var(--gold); border-color:var(--ink); }
+  .filter-chip.active { background: var(--ink); color: var(--gold); border-color: var(--ink); }
 
-  .search-wrap { position:relative; margin-bottom:12px; }
-  .search-wrap input { padding-left:36px; }
-  .search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:0.4; }
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap input { padding-left: 36px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.4; }
 
-  .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
-  .empty-state p { font-size:0.85rem; line-height:1.6; }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state p { font-size: 0.85rem; line-height: 1.6; }
 
   /* ── MODAL ── */
   .modal-overlay {
-    display:none; position:fixed; inset:0;
-    background:rgba(26,18,8,0.7); z-index:200; align-items:flex-end;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,18,8,0.7);
+    z-index: 200;
+    align-items: flex-end;
   }
-  .modal-overlay.open { display:flex; }
+  .modal-overlay.open { display: flex; }
   .modal {
-    background:var(--parchment); border-radius:16px 16px 0 0; padding:20px;
-    width:100%; max-width:480px; margin:0 auto;
-    max-height:90vh; overflow-y:auto; animation:slideUp 0.25s ease;
+    background: var(--parchment);
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
   }
-  @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
-  .modal-handle { width:36px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 16px; }
-  .modal h2 { font-family:'Playfair Display',serif; font-size:1.3rem; margin-bottom:4px; }
-  .modal .subtitle { font-size:0.8rem; color:var(--muted); margin-bottom:16px; font-style:italic; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+  }
+  .modal .subtitle {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
   .modal .description {
-    font-size:0.85rem; line-height:1.6; color:var(--muted); margin-bottom:14px;
-    padding:10px; background:var(--cream); border-radius:6px; border-left:3px solid var(--gold);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding: 10px;
+    background: var(--cream);
+    border-radius: 6px;
+    border-left: 3px solid var(--gold);
   }
-  .modal .gr-rating { font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--gold); margin-bottom:14px; }
+  .modal .gr-rating {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
 
   /* ── DUPLICATE BANNER ── */
   .duplicate-banner {
-    background:var(--rust); color:#fff; padding:10px 14px;
-    border-radius:8px; margin-bottom:14px; font-size:0.85rem;
-    display:flex; align-items:center; gap:8px;
+    background: var(--rust);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-
-  /* ── TIMESTAMPS ── */
-  .timestamps {
-    display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px;
-  }
-  .ts-box {
-    background:var(--cream); border:1px solid var(--border); border-radius:7px;
-    padding:8px; text-align:center;
-  }
-  .ts-box .ts-lbl {
-    font-family:'DM Mono',monospace; font-size:0.55rem; letter-spacing:0.07em;
-    color:var(--muted); text-transform:uppercase; display:block; margin-bottom:3px;
-  }
-  .ts-box .ts-val { font-size:0.75rem; color:var(--ink); }
-
-  /* ── STATS ── */
-  .stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
-  .stat-box { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:10px 6px; text-align:center; }
-  .stat-box .num { font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--gold); display:block; }
-  .stat-box .lbl { font-family:'DM Mono',monospace; font-size:0.55rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
-
-  .stat-row2 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px; }
-
-  .section-title {
-    font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.1em;
-    color:var(--muted); text-transform:uppercase; margin-bottom:12px;
-  }
-
-  .modal-actions { display:flex; gap:8px; margin-top:14px; }
-  .modal-actions .btn { margin-bottom:0; }
-
-  .detail-field { margin-bottom:10px; }
-  .detail-field .lbl { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:2px; }
-  .detail-field .val { font-size:0.9rem; }
 
   /* ── TOAST ── */
   #toast {
-    position:fixed; bottom:80px; left:50%;
-    transform:translateX(-50%) translateY(20px);
-    background:var(--ink); color:var(--gold); padding:10px 18px;
-    border-radius:20px; font-family:'DM Mono',monospace; font-size:0.75rem;
-    opacity:0; transition:all 0.3s; z-index:300; white-space:nowrap;
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--gold);
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 300;
+    white-space: nowrap;
   }
-  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ── LOADING ── */
   .loader {
-    display:inline-block; width:18px; height:18px;
-    border:2px solid var(--border); border-top-color:var(--gold);
-    border-radius:50%; animation:spin 0.7s linear infinite;
-    vertical-align:middle; margin-right:6px;
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
   }
-  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .stat-box .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-box .lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .modal-actions .btn { margin-bottom: 0; }
+
+  /* detail view fields */
+  .detail-field { margin-bottom: 10px; }
+  .detail-field .lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+  .detail-field .val { font-size: 0.9rem; }
 </style>
 </head>
 <body>
@@ -314,79 +456,60 @@
 </header>
 
 <nav>
-  <button class="active" onclick="showView('scan',this)">Scan</button>
-  <button onclick="showView('library',this)">Library</button>
-  <button onclick="showView('stats',this)">Stats</button>
+  <button class="active" onclick="showView('scan')">Scan</button>
+  <button onclick="showView('library')">Library</button>
+  <button onclick="showView('stats')">Stats</button>
 </nav>
 
-<!-- ═══ SCAN VIEW ═══ -->
 <div class="view active" id="view-scan">
   <div class="scan-area" id="scanArea">
     <video id="videoEl" autoplay playsinline></video>
     <canvas id="captureCanvas"></canvas>
-    <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
-    <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+    <div class="scan-corner tl"></div>
+    <div class="scan-corner tr"></div>
+    <div class="scan-corner bl"></div>
+    <div class="scan-corner br"></div>
     <div class="scan-placeholder" id="scanPlaceholder">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <path d="M3 9h18M9 21V9"/>
       </svg>
       <p>Tap <strong>Start Camera</strong> to scan a book cover or spine</p>
     </div>
   </div>
+
   <button class="btn btn-primary" id="cameraBtn" onclick="toggleCamera()">Start Camera</button>
-  <button class="btn btn-secondary" id="captureBtn" onclick="captureAndSearch()" disabled>Capture &amp; Identify</button>
+  <button class="btn btn-secondary" id="captureBtn" onclick="captureAndSearch()" disabled>Capture & Identify</button>
   <button class="btn btn-secondary" onclick="openManualAdd()">＋ Add Manually</button>
-  <div id="scanStatus" style="margin-top:10px;font-size:0.8rem;color:var(--muted);text-align:center;min-height:20px;"></div>
+
+  <div id="scanStatus" style="margin-top:10px; font-size:0.8rem; color:var(--muted); text-align:center; min-height:20px;"></div>
 </div>
 
-<!-- ═══ LIBRARY VIEW ═══ -->
 <div class="view" id="view-library">
   <div class="search-wrap">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="searchInput" placeholder="Search by title or author…" oninput="renderLibrary()">
   </div>
 
-  <div class="filter-section">
-    <div class="filter-label">Format</div>
-    <div class="filter-bar" id="formatFilters">
-      <div class="filter-chip active" data-fmt="all" onclick="setFilter('fmt',this)">All</div>
-      <div class="filter-chip" data-fmt="physical" onclick="setFilter('fmt',this)">Physical</div>
-      <div class="filter-chip" data-fmt="digital" onclick="setFilter('fmt',this)">Digital</div>
-      <div class="filter-chip" data-fmt="both" onclick="setFilter('fmt',this)">Both</div>
-      <div class="filter-chip" data-fmt="not-owned" onclick="setFilter('fmt',this)">Not Owned</div>
-    </div>
-  </div>
-
-  <div class="filter-section">
-    <div class="filter-label">Reading Status</div>
-    <div class="filter-bar" id="statusFilters">
-      <div class="filter-chip active" data-sta="all" onclick="setFilter('sta',this)">All</div>
-      <div class="filter-chip" data-sta="read" onclick="setFilter('sta',this)">Read</div>
-      <div class="filter-chip" data-sta="reading" onclick="setFilter('sta',this)">Reading</div>
-      <div class="filter-chip" data-sta="not-read" onclick="setFilter('sta',this)">Not Read</div>
-    </div>
+  <div class="filter-bar">
+    <div class="filter-chip active" data-filter="all" onclick="setFilter(this)">All</div>
+    <div class="filter-chip" data-filter="read" onclick="setFilter(this)">Read</div>
+    <div class="filter-chip" data-filter="started" onclick="setFilter(this)">Started</div>
+    <div class="filter-chip" data-filter="owned" onclick="setFilter(this)">Owned</div>
+    <div class="filter-chip" data-filter="not-owned" onclick="setFilter(this)">Not Owned</div>
   </div>
 
   <div id="bookList"></div>
 </div>
 
-<!-- ═══ STATS VIEW ═══ -->
 <div class="view" id="view-stats">
-  <p class="section-title">Reading status</p>
+  <p class="section-title">Collection overview</p>
   <div class="stat-row">
     <div class="stat-box"><span class="num" id="s-total">0</span><span class="lbl">Total</span></div>
     <div class="stat-box"><span class="num" id="s-read">0</span><span class="lbl">Read</span></div>
-    <div class="stat-box"><span class="num" id="s-reading">0</span><span class="lbl">Reading</span></div>
+    <div class="stat-box"><span class="num" id="s-owned">0</span><span class="lbl">Owned</span></div>
+    <div class="stat-box"><span class="num" id="s-started">0</span><span class="lbl">Started</span></div>
   </div>
-
-  <p class="section-title">Format</p>
-  <div class="stat-row2">
-    <div class="stat-box"><span class="num" id="s-physical">0</span><span class="lbl">Physical</span></div>
-    <div class="stat-box"><span class="num" id="s-digital">0</span><span class="lbl">Digital</span></div>
-    <div class="stat-box"><span class="num" id="s-both">0</span><span class="lbl">Both</span></div>
-    <div class="stat-box"><span class="num" id="s-notowned">0</span><span class="lbl">Not Owned</span></div>
-  </div>
-
   <div id="statsList"></div>
 
   <div style="margin-top:24px;">
@@ -394,28 +517,38 @@
     <button class="btn btn-secondary" onclick="exportCSV()" style="margin-bottom:8px">↓ Export to CSV</button>
     <button class="btn btn-secondary" onclick="document.getElementById('csvFileInput').click()">↑ Import from CSV</button>
     <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(event)">
-    <p style="font-size:0.72rem;color:var(--muted);margin-top:8px;line-height:1.6;">
-      CSV columns: <span style="font-family:'DM Mono',monospace">title, author, publisher, year, notes, format, status</span><br>
-      Format: <span style="font-family:'DM Mono',monospace">physical · digital · both · not-owned</span><br>
-      Status: <span style="font-family:'DM Mono',monospace">read · reading · not-read</span>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:8px;line-height:1.5;">
+      CSV columns: <span style="font-family:'DM Mono',monospace">title, author, publisher, year, notes, status</span><br>
+      Status values: <span style="font-family:'DM Mono',monospace">read · started · owned · not-owned</span>
     </p>
   </div>
 </div>
 
-<!-- ═══ BOOK DETAIL MODAL ═══ -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Import Preview</h2>
+    <p class="subtitle" id="importSummary"></p>
+    <div id="importPreview" style="max-height:260px;overflow-y:auto;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('importModal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="confirmImport()">Import All</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="detailModal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div id="detailContent"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('detailModal')">Close</button>
-      <button class="btn btn-primary" style="flex:1" onclick="openEditFromDetail()">Edit</button>
+      <button class="btn btn-primary" style="flex:1" id="editBtn" onclick="openEditFromDetail()">Edit</button>
       <button class="btn btn-danger" style="flex:0.6" onclick="deleteCurrentBook()">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ ADD/EDIT MODAL ═══ -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -430,14 +563,11 @@
 
     <div class="form-group">
       <label>Title *</label>
-      <div style="display:flex;gap:6px;">
-        <input type="text" id="f-title" placeholder="Book title" oninput="checkDuplicate()" style="flex:1">
-        <button onclick="lookupFromForm()" id="lookupBtn" style="flex-shrink:0;padding:10px 12px;border:1px solid var(--border);border-radius:7px;background:var(--cream);cursor:pointer;font-size:0.8rem;white-space:nowrap;" title="Search Open Library">🔍 Look up</button>
-      </div>
+      <input type="text" id="f-title" placeholder="Book title" oninput="checkDuplicate()">
     </div>
     <div class="form-group">
       <label>Author *</label>
-      <input type="text" id="f-author" placeholder="Author name (helps refine lookup)">
+      <input type="text" id="f-author" placeholder="Author name">
     </div>
     <div class="form-group">
       <label>Publisher</label>
@@ -451,43 +581,19 @@
       <label>Notes</label>
       <textarea id="f-notes" placeholder="Your notes…"></textarea>
     </div>
-
     <div class="form-group">
-      <label>Format</label>
-      <div class="toggle-group">
-        <div class="toggle-btn" data-fmt="physical"  onclick="selectFormat(this)">📖 Physical</div>
-        <div class="toggle-btn" data-fmt="digital"   onclick="selectFormat(this)">💻 Digital</div>
-        <div class="toggle-btn" data-fmt="both"      onclick="selectFormat(this)">📖💻 Both</div>
-        <div class="toggle-btn" data-fmt="not-owned" onclick="selectFormat(this)">○ Not Owned</div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Reading Status</label>
-      <div class="toggle-group">
-        <div class="toggle-btn" data-sta="not-read" onclick="selectStatus(this)">Not Read</div>
-        <div class="toggle-btn" data-sta="reading"  onclick="selectStatus(this)">▷ Reading</div>
-        <div class="toggle-btn" data-sta="read"     onclick="selectStatus(this)">✓ Read</div>
+      <label>Status</label>
+      <div class="status-grid">
+        <div class="status-btn" data-status="read" onclick="selectStatus(this)">✓ Read</div>
+        <div class="status-btn" data-status="started" onclick="selectStatus(this)">▷ Started</div>
+        <div class="status-btn" data-status="owned" onclick="onclick=selectStatus(this)">📚 Owned</div>
+        <div class="status-btn" data-status="not-owned" onclick="selectStatus(this)">○ Not Owned</div>
       </div>
     </div>
 
     <div style="display:flex;gap:8px;margin-top:6px;">
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('addModal')">Cancel</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveBook()">Save Book</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ IMPORT PREVIEW MODAL ═══ -->
-<div class="modal-overlay" id="importModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <h2>Import Preview</h2>
-    <p class="subtitle" id="importSummary"></p>
-    <div id="importPreview" style="max-height:260px;overflow-y:auto;margin-bottom:14px;"></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('importModal')">Cancel</button>
-      <button class="btn btn-primary" style="flex:1" onclick="confirmImport()">Import All</button>
     </div>
   </div>
 </div>
@@ -499,21 +605,20 @@
 //  DB
 // ══════════════════════════════════
 let db;
-let fmtFilter = 'all';
-let staFilter = 'all';
+let currentFilter = 'all';
 let editingId = null;
 let currentDetailId = null;
 let stream = null;
 let cameraActive = false;
-let pendingImport = [];
 
 function openDB() {
   return new Promise((res, rej) => {
-    const req = indexedDB.open('mylibrary', 2);
+    const req = indexedDB.open('mylibrary', 1);
     req.onupgradeneeded = e => {
       const d = e.target.result;
       if (!d.objectStoreNames.contains('books')) {
-        d.createObjectStore('books', { keyPath:'id', autoIncrement:true });
+        const store = d.createObjectStore('books', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('title', 'title', { unique: false });
       }
     };
     req.onsuccess = e => { db = e.target.result; res(db); };
@@ -521,57 +626,104 @@ function openDB() {
   });
 }
 
-const dbAll = () => new Promise((res,rej) => {
-  const req = db.transaction('books','readonly').objectStore('books').getAll();
-  req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
-});
-const dbAdd = b => new Promise((res,rej) => {
-  const req = db.transaction('books','readwrite').objectStore('books').add(b);
-  req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
-});
-const dbPut = b => new Promise((res,rej) => {
-  const req = db.transaction('books','readwrite').objectStore('books').put(b);
-  req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error);
-});
-const dbDelete = id => new Promise((res,rej) => {
-  const req = db.transaction('books','readwrite').objectStore('books').delete(id);
-  req.onsuccess = () => res(); req.onerror = () => rej(req.error);
-});
+function dbAll() {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('books', 'readonly');
+    const req = tx.objectStore('books').getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+function dbAdd(book) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('books', 'readwrite');
+    const req = tx.objectStore('books').add(book);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+function dbPut(book) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('books', 'readwrite');
+    const req = tx.objectStore('books').put(book);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+function dbDelete(id) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction('books', 'readwrite');
+    const req = tx.objectStore('books').delete(id);
+    req.onsuccess = () => res();
+    req.onerror = () => rej(req.error);
+  });
+}
 
 // ══════════════════════════════════
 //  NAV
 // ══════════════════════════════════
-function showView(name, btn) {
+function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
-  btn.classList.add('active');
+  if (event && event.target) event.target.classList.add('active');
   if (name === 'library') renderLibrary();
   if (name === 'stats') renderStats();
 }
 
 // ══════════════════════════════════
-//  CAMERA
+//  CAMERA (Patched for Stability)
 // ══════════════════════════════════
 async function toggleCamera() {
-  cameraActive ? stopCamera() : await startCamera();
+  if (cameraActive) {
+    stopCamera();
+  } else {
+    await startCamera();
+  }
 }
+
 async function startCamera() {
+  // Relaxed resolution rules for older Android 9 hardware
+  const constraints = {
+    video: { 
+      facingMode: 'environment',
+      width: { ideal: 640 }, 
+      height: { ideal: 480 } 
+    }
+  };
+
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode:'environment', width:{ideal:1280}, height:{ideal:960} }
-    });
-    const v = document.getElementById('videoEl');
-    v.srcObject = stream; v.style.display = 'block';
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const video = document.getElementById('videoEl');
+    video.srcObject = stream;
+    video.style.display = 'block';
     document.getElementById('scanPlaceholder').style.display = 'none';
     document.getElementById('cameraBtn').textContent = 'Stop Camera';
     document.getElementById('captureBtn').disabled = false;
     cameraActive = true;
-  } catch(e) { setScanStatus('Camera access denied. Use "Add Manually" instead.'); }
+    setScanStatus('');
+  } catch (e) {
+    // Ultimate fallback if ideal environment camera fails
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.getElementById('videoEl');
+      video.srcObject = stream;
+      video.style.display = 'block';
+      document.getElementById('scanPlaceholder').style.display = 'none';
+      document.getElementById('cameraBtn').textContent = 'Stop Camera';
+      document.getElementById('captureBtn').disabled = false;
+      cameraActive = true;
+      setScanStatus('');
+    } catch (err) {
+      setScanStatus('Camera access denied or unsupported. Use "Add Manually".');
+    }
+  }
 }
+
 function stopCamera() {
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-  document.getElementById('videoEl').style.display = 'none';
+  const video = document.getElementById('videoEl');
+  video.style.display = 'none';
   document.getElementById('scanPlaceholder').style.display = 'block';
   document.getElementById('cameraBtn').textContent = 'Start Camera';
   document.getElementById('captureBtn').disabled = true;
@@ -581,98 +733,132 @@ function stopCamera() {
 async function captureAndSearch() {
   const video = document.getElementById('videoEl');
   const canvas = document.getElementById('captureCanvas');
-  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
   canvas.getContext('2d').drawImage(video, 0, 0);
+
   setScanStatus('<span class="loader"></span> Reading text from image…');
   document.getElementById('captureBtn').disabled = true;
+
   try {
     let extractedText = '';
-    if (window.TextDetector) {
-      const results = await new window.TextDetector().detect(canvas);
-      extractedText = results.map(r => r.rawValue).join(' ');
+    
+    // Wrapped in a safe try/catch block to completely prevent crashes on Android 9
+    try {
+      if (window.TextDetector) {
+        const detector = new window.TextDetector();
+        const results = await detector.detect(canvas);
+        extractedText = results.map(r => r.rawValue).join(' ');
+      }
+    } catch (detectorError) {
+      console.log("TextDetector failed or not supported natively.");
     }
-    const lines = extractedText.split(/\n|\|/).map(s => s.trim()).filter(s => s.length > 2);
-    setScanStatus('<span class="loader"></span> Searching book database…');
+
     if (extractedText.length > 3) {
-      await searchOpenLibrary(lines.slice(0,3).join(' '), true);
+      const lines = extractedText.split(/\n|\|/).map(s => s.trim()).filter(s => s.length > 2);
+      setScanStatus('<span class="loader"></span> Searching book database…');
+      const query = lines.slice(0, 3).join(' ');
+      await searchOpenLibrary(query, true);
     } else {
-      setScanStatus('⚠ Text detection not supported in this browser. Please use "Add Manually".');
+      setScanStatus('⚠ Text detection not supported or failed in this browser. Please use "Add Manually".');
       document.getElementById('captureBtn').disabled = false;
     }
-  } catch(e) {
+  } catch (e) {
     setScanStatus('⚠ Could not read text. Please use "Add Manually".');
     document.getElementById('captureBtn').disabled = false;
   }
 }
-function setScanStatus(html) { document.getElementById('scanStatus').innerHTML = html; }
+
+function setScanStatus(html) {
+  document.getElementById('scanStatus').innerHTML = html;
+}
 
 // ══════════════════════════════════
-//  OPEN LIBRARY
+//  OPEN LIBRARY SEARCH
 // ══════════════════════════════════
-async function searchOpenLibrary(query, fromScan=false) {
+async function searchOpenLibrary(query, fromScan = false) {
   try {
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,ratings_average,ratings_count,key`;
-    const data = await (await fetch(url)).json();
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,description,ratings_average,ratings_count,key`;
+    const res = await fetch(url);
+    const data = await res.json();
+
     if (data.docs && data.docs.length > 0) {
-      const b = data.docs[0];
+      const book = data.docs[0];
+      const title = book.title || '';
+      const author = (book.author_name || []).join(', ');
+      const publisher = (book.publisher || [])[0] || '';
+      const year = book.first_publish_year || '';
+      const rating = book.ratings_average ? book.ratings_average.toFixed(1) : null;
+      const ratingsCount = book.ratings_count || 0;
+
       let description = '';
-      if (b.key) {
+      if (book.key) {
         try {
-          const wd = await (await fetch(`https://openlibrary.org${b.key}.json`)).json();
-          if (wd.description) {
-            const raw = typeof wd.description === 'string' ? wd.description : (wd.description.value || '');
-            description = raw.replace(/\n/g,' ').split(/(?<=[.!?])\s+/).slice(0,3).join(' ');
+          const workRes = await fetch(`https://openlibrary.org${book.key}.json`);
+          const workData = await workRes.json();
+          if (workData.description) {
+            const raw = typeof workData.description === 'string'
+              ? workData.description
+              : workData.description.value || '';
+            const sentences = raw.replace(/\n/g, ' ').split(/(?<=[.!?])\s+/);
+            description = sentences.slice(0, 3).join(' ');
           }
-        } catch(_) {}
+        } catch (_) {}
       }
+
       if (fromScan) setScanStatus('✓ Book identified!');
-      openAddModal({
-        title: b.title || '',
-        author: (b.author_name||[]).join(', '),
-        publisher: (b.publisher||[])[0] || '',
-        year: String(b.first_publish_year || ''),
-        description,
-        rating: b.ratings_average ? b.ratings_average.toFixed(1) : null,
-        ratingsCount: b.ratings_count || 0
-      });
+      openAddModal({ title, author, publisher, year: String(year), description, rating, ratingsCount });
     } else {
       if (fromScan) setScanStatus('⚠ Could not identify book. Fill in manually.');
       openAddModal({});
     }
-  } catch(e) {
+  } catch (e) {
     if (fromScan) setScanStatus('⚠ Network error. Fill in manually.');
     openAddModal({});
   }
+
   if (fromScan) document.getElementById('captureBtn').disabled = false;
 }
 
 // ══════════════════════════════════
 //  ADD / EDIT MODAL
 // ══════════════════════════════════
-function openManualAdd() { editingId = null; openAddModal({}); }
+function openManualAdd() {
+  editingId = null;
+  openAddModal({});
+}
 
 function openAddModal(data) {
   editingId = null;
   document.getElementById('modalTitle').textContent = 'Add Book';
-  document.getElementById('f-title').value     = data.title     || '';
-  document.getElementById('f-author').value    = data.author    || '';
+  document.getElementById('f-title').value = data.title || '';
+  document.getElementById('f-author').value = data.author || '';
   document.getElementById('f-publisher').value = data.publisher || '';
-  document.getElementById('f-year').value      = data.year      || '';
-  document.getElementById('f-notes').value     = data.notes     || '';
+  document.getElementById('f-year').value = data.year || '';
+  document.getElementById('f-notes').value = data.notes || '';
 
   const descEl = document.getElementById('bookDescription');
-  descEl.style.display = data.description ? 'block' : 'none';
-  if (data.description) descEl.textContent = data.description;
+  if (data.description) {
+    descEl.textContent = data.description;
+    descEl.style.display = 'block';
+  } else {
+    descEl.style.display = 'none';
+  }
 
   const ratingEl = document.getElementById('bookGRRating');
   if (data.rating) {
-    ratingEl.innerHTML = `${ratingToStars(parseFloat(data.rating))} ${data.rating} / 5 &nbsp;·&nbsp; ${(data.ratingsCount||0).toLocaleString()} ratings on Open Library`;
+    const stars = ratingToStars(parseFloat(data.rating));
+    ratingEl.innerHTML = `${stars} ${data.rating} / 5 &nbsp;·&nbsp; ${data.ratingsCount?.toLocaleString() || ''} ratings on Open Library`;
     ratingEl.style.display = 'block';
-  } else { ratingEl.style.display = 'none'; }
+  } else {
+    ratingEl.style.display = 'none';
+  }
 
-  clearSelections();
-  if (data.format) applyFormatClass(document.querySelector(`.toggle-btn[data-fmt="${data.format}"]`));
-  if (data.status) applyStatusClass(document.querySelector(`.toggle-btn[data-sta="${data.status}"]`));
+  document.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
+  if (data.status) {
+    const btn = document.querySelector(`.status-btn[data-status="${data.status}"]`);
+    if (btn) btn.classList.add('sel-' + data.status.replace('-',''));
+  }
 
   document.getElementById('duplicateWarning').style.display = 'none';
   checkDuplicate();
@@ -682,85 +868,62 @@ function openAddModal(data) {
 async function openEditModal(book) {
   editingId = book.id;
   document.getElementById('modalTitle').textContent = 'Edit Book';
-  document.getElementById('f-title').value     = book.title     || '';
-  document.getElementById('f-author').value    = book.author    || '';
+  document.getElementById('f-title').value = book.title || '';
+  document.getElementById('f-author').value = book.author || '';
   document.getElementById('f-publisher').value = book.publisher || '';
-  document.getElementById('f-year').value      = book.year      || '';
-  document.getElementById('f-notes').value     = book.notes     || '';
+  document.getElementById('f-year').value = book.year || '';
+  document.getElementById('f-notes').value = book.notes || '';
+
   document.getElementById('bookDescription').style.display = 'none';
   document.getElementById('bookGRRating').style.display = 'none';
   document.getElementById('duplicateWarning').style.display = 'none';
 
-  clearSelections();
-  if (book.format) applyFormatClass(document.querySelector(`.toggle-btn[data-fmt="${book.format}"]`));
-  if (book.status) applyStatusClass(document.querySelector(`.toggle-btn[data-sta="${book.status}"]`));
+  document.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
+  if (book.status) {
+    const btn = document.querySelector(`.status-btn[data-status="${book.status}"]`);
+    if (btn) btn.classList.add('sel-' + book.status.replace('-',''));
+  }
 
   document.getElementById('addModal').classList.add('open');
 }
 
-function clearSelections() {
-  document.querySelectorAll('.toggle-btn[data-fmt]').forEach(b => b.className = 'toggle-btn');
-  document.querySelectorAll('.toggle-btn[data-sta]').forEach(b => b.className = 'toggle-btn');
-}
-function applyFormatClass(el) { if(el) el.classList.add('fmt-' + el.dataset.fmt.replace('-','')); }
-function applyStatusClass(el) { if(el) el.classList.add('sta-' + el.dataset.sta.replace('-','')); }
-
-function selectFormat(el) {
-  document.querySelectorAll('.toggle-btn[data-fmt]').forEach(b => b.className = 'toggle-btn');
-  applyFormatClass(el);
-}
 function selectStatus(el) {
-  document.querySelectorAll('.toggle-btn[data-sta]').forEach(b => b.className = 'toggle-btn');
-  applyStatusClass(el);
+  document.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
+  const s = el.dataset.status;
+  el.classList.add('sel-' + s.replace('-',''));
 }
 
-function getSelectedFormat() {
-  const el = document.querySelector('.toggle-btn[data-fmt][class*="fmt-"]');
-  return el ? el.dataset.fmt : 'physical';
-}
 function getSelectedStatus() {
-  const el = document.querySelector('.toggle-btn[data-sta][class*="sta-"]');
-  return el ? el.dataset.sta : 'not-read';
+  const sel = document.querySelector('.status-btn[class*="sel-"]');
+  return sel ? sel.dataset.status : 'owned';
 }
 
 async function checkDuplicate() {
   if (editingId) return;
-  const title = document.getElementById('f-title').value.trim();
+  const title = document.getElementById('f-title').value.trim().toLowerCase();
   if (title.length < 2) { document.getElementById('duplicateWarning').style.display = 'none'; return; }
   const books = await dbAll();
   const dup = books.find(b => normalize(b.title) === normalize(title));
   document.getElementById('duplicateWarning').style.display = dup ? 'flex' : 'none';
 }
 
+function normalize(s) {
+  return (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
 async function saveBook() {
   const title = document.getElementById('f-title').value.trim();
+  const author = document.getElementById('f-author').value.trim();
   if (!title) { showToast('Title is required'); return; }
-
-  const newFormat = getSelectedFormat();
-  const newStatus = getSelectedStatus();
-  const now = Date.now();
-
-  let existingBook = null;
-  if (editingId) {
-    const all = await dbAll();
-    existingBook = all.find(b => b.id === editingId);
-  }
-
-  // Timestamp logic: only set if not already set (preserve originals on re-read)
-  const startedAt  = newStatus === 'reading' && !(existingBook?.startedAt)  ? now : (existingBook?.startedAt  || null);
-  const finishedAt = newStatus === 'read'    && !(existingBook?.finishedAt) ? now : (existingBook?.finishedAt || null);
 
   const book = {
     title,
-    author:     document.getElementById('f-author').value.trim(),
-    publisher:  document.getElementById('f-publisher').value.trim(),
-    year:       document.getElementById('f-year').value.trim(),
-    notes:      document.getElementById('f-notes').value.trim(),
-    format:     newFormat,
-    status:     newStatus,
-    addedAt:    existingBook?.addedAt || now,
-    startedAt,
-    finishedAt
+    author,
+    publisher: document.getElementById('f-publisher').value.trim(),
+    year: document.getElementById('f-year').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    status: getSelectedStatus(),
+    addedAt: editingId ? undefined : Date.now()
   };
 
   if (editingId) {
@@ -780,31 +943,18 @@ async function saveBook() {
 // ══════════════════════════════════
 //  DETAIL MODAL
 // ══════════════════════════════════
-const FMT_LABELS = { physical:'📖 Physical', digital:'💻 Digital', both:'📖💻 Both', 'not-owned':'○ Not Owned' };
-const STA_LABELS = { read:'✓ Read', reading:'▷ Reading', 'not-read':'Not Read' };
-
-function fmtDate(ts) {
-  if (!ts) return '—';
-  return new Date(ts).toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' });
-}
-
 function openDetailModal(book) {
   currentDetailId = book.id;
+  const statusLabels = { read: '✓ Read', started: '▷ Started', owned: '📚 Owned', 'not-owned': '○ Not Owned' };
   document.getElementById('detailContent').innerHTML = `
-    <h2>${escHtml(book.title)}</h2>
-    <p class="subtitle">${escHtml(book.author || 'Unknown author')}</p>
+    <h2>${book.title}</h2>
+    <p class="subtitle">${book.author || 'Unknown author'}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-      <span class="badge badge-${book.format}">${FMT_LABELS[book.format] || book.format}</span>
-      <span class="badge badge-${book.status}">${STA_LABELS[book.status] || book.status}</span>
+      <span class="badge badge-${book.status}">${statusLabels[book.status] || book.status}</span>
       ${book.year ? `<span class="badge badge-year">${book.year}</span>` : ''}
     </div>
-    <div class="timestamps">
-      <div class="ts-box"><span class="ts-lbl">Added</span><span class="ts-val">${fmtDate(book.addedAt)}</span></div>
-      <div class="ts-box"><span class="ts-lbl">Started</span><span class="ts-val">${fmtDate(book.startedAt)}</span></div>
-      <div class="ts-box"><span class="ts-lbl">Finished</span><span class="ts-val">${fmtDate(book.finishedAt)}</span></div>
-    </div>
-    ${book.publisher ? `<div class="detail-field"><div class="lbl">Publisher</div><div class="val">${escHtml(book.publisher)}</div></div>` : ''}
-    ${book.notes ? `<div class="detail-field"><div class="lbl">Notes</div><div class="val">${escHtml(book.notes)}</div></div>` : ''}
+    ${book.publisher ? `<div class="detail-field"><div class="lbl">Publisher</div><div class="val">${book.publisher}</div></div>` : ''}
+    ${book.notes ? `<div class="detail-field"><div class="lbl">Notes</div><div class="val">${book.notes}</div></div>` : ''}
   `;
   document.getElementById('detailModal').classList.add('open');
 }
@@ -812,57 +962,62 @@ function openDetailModal(book) {
 async function openEditFromDetail() {
   const books = await dbAll();
   const book = books.find(b => b.id === currentDetailId);
-  if (book) { closeModal('detailModal'); openEditModal(book); }
+  if (book) {
+    closeModal('detailModal');
+    openEditModal(book);
+  }
 }
 
 async function deleteCurrentBook() {
   if (!confirm('Delete this book?')) return;
   await dbDelete(currentDetailId);
   closeModal('detailModal');
-  renderLibrary(); renderStats(); updateCount();
+  renderLibrary();
+  renderStats();
+  updateCount();
   showToast('Book deleted');
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
 
 // ══════════════════════════════════
 //  LIBRARY RENDER
 // ══════════════════════════════════
-function setFilter(type, el) {
-  const barId = type === 'fmt' ? 'formatFilters' : 'statusFilters';
-  document.querySelectorAll(`#${barId} .filter-chip`).forEach(c => c.classList.remove('active'));
+function setFilter(el) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  if (type === 'fmt') fmtFilter = el.dataset.fmt;
-  else                staFilter = el.dataset.sta;
+  currentFilter = el.dataset.filter;
   renderLibrary();
 }
 
 async function renderLibrary() {
   const books = await dbAll();
   const query = normalize(document.getElementById('searchInput').value);
-  const list  = document.getElementById('bookList');
+  const list = document.getElementById('bookList');
 
   let filtered = books.filter(b => {
-    const mFmt    = fmtFilter === 'all' || b.format === fmtFilter;
-    const mSta    = staFilter === 'all' || b.status === staFilter;
-    const mSearch = !query || normalize(b.title).includes(query) || normalize(b.author||'').includes(query);
-    return mFmt && mSta && mSearch;
+    const matchFilter = currentFilter === 'all' || b.status === currentFilter;
+    const matchSearch = !query || normalize(b.title).includes(query) || normalize(b.author).includes(query);
+    return matchFilter && matchSearch;
   });
 
-  filtered.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+  filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
   if (filtered.length === 0) {
     list.innerHTML = `<div class="empty-state"><p>No books found.<br>Scan or add one to get started.</p></div>`;
     return;
   }
 
+  const statusLabels = { read: '✓ Read', started: '▷ Started', owned: '📚 Owned', 'not-owned': '○ Not Owned' };
+
   list.innerHTML = filtered.map(b => `
-    <div class="book-card fmt-${b.format||'physical'}" onclick='openDetailModal(${JSON.stringify(b).replace(/'/g,"&#39;")})'>
-      <h3>${escHtml(b.title)}</h3>
-      <div class="author">${escHtml(b.author || '')}</div>
+    <div class="book-card status-${b.status}" onclick='openDetailModal(${JSON.stringify(b)})'>
+      <h3>${b.title}</h3>
+      <div class="author">${b.author || '<em>Unknown author</em>'}</div>
       <div class="book-meta">
-        <span class="badge badge-${b.format}">${FMT_LABELS[b.format]||b.format}</span>
-        <span class="badge badge-${b.status}">${STA_LABELS[b.status]||b.status}</span>
+        <span class="badge badge-${b.status}">${statusLabels[b.status] || b.status}</span>
         ${b.year ? `<span class="badge badge-year">${b.year}</span>` : ''}
       </div>
     </div>
@@ -874,26 +1029,44 @@ async function renderLibrary() {
 // ══════════════════════════════════
 async function renderStats() {
   const books = await dbAll();
-  document.getElementById('s-total').textContent   = books.length;
-  document.getElementById('s-read').textContent    = books.filter(b => b.status === 'read').length;
-  document.getElementById('s-reading').textContent = books.filter(b => b.status === 'reading').length;
-  document.getElementById('s-physical').textContent  = books.filter(b => b.format === 'physical').length;
-  document.getElementById('s-digital').textContent   = books.filter(b => b.format === 'digital').length;
-  document.getElementById('s-both').textContent      = books.filter(b => b.format === 'both').length;
-  document.getElementById('s-notowned').textContent  = books.filter(b => b.format === 'not-owned').length;
+  document.getElementById('s-total').textContent = books.length;
+  document.getElementById('s-read').textContent = books.filter(b => b.status === 'read').length;
+  document.getElementById('s-owned').textContent = books.filter(b => b.status === 'owned').length;
+  document.getElementById('s-started').textContent = books.filter(b => b.status === 'started').length;
 
   const authorCount = {};
-  books.forEach(b => { if (b.author) authorCount[b.author] = (authorCount[b.author]||0)+1; });
-  const topAuthors = Object.entries(authorCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  books.forEach(b => { if (b.author) authorCount[b.author] = (authorCount[b.author] || 0) + 1; });
+  const topAuthors = Object.entries(authorCount).sort((a,b) => b[1]-a[1]).slice(0,5);
 
   document.getElementById('statsList').innerHTML = topAuthors.length ? `
-    <p class="section-title" style="margin-top:4px">Top authors</p>
-    ${topAuthors.map(([a,c]) => `
+    <p class="section-title" style="margin-top:10px">Top authors</p>
+    ${topAuthors.map(([a, c]) => `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
-        <span style="font-size:0.85rem">${escHtml(a)}</span>
+        <span style="font-size:0.85rem">${a}</span>
         <span style="font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--gold)">${c} book${c>1?'s':''}</span>
-      </div>`).join('')}
+      </div>
+    `).join('')}
   ` : '';
+}
+
+// ══════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════
+function ratingToStars(r) {
+  const full = Math.round(r);
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+async function updateCount() {
+  const books = await dbAll();
+  document.getElementById('bookCount').textContent = `${books.length} book${books.length !== 1 ? 's' : ''}`;
 }
 
 // ══════════════════════════════════
@@ -901,18 +1074,25 @@ async function renderStats() {
 // ══════════════════════════════════
 async function exportCSV() {
   const books = await dbAll();
-  if (!books.length) { showToast('No books to export'); return; }
-  const headers = ['title','author','publisher','year','notes','format','status','addedAt','startedAt','finishedAt'];
-  const esc = v => { const s=(v||'').toString().replace(/"/g,'""'); return /[",\n\r]/.test(s)?`"${s}"`:s; };
-  const rows = books.map(b => headers.map(h => {
-    if (['addedAt','startedAt','finishedAt'].includes(h)) return esc(b[h] ? fmtDate(b[h]) : '');
-    return esc(b[h]);
-  }).join(','));
+  if (books.length === 0) { showToast('No books to export'); return; }
+
+  const headers = ['title', 'author', 'publisher', 'year', 'notes', 'status'];
+  const escape = v => {
+    const s = (v || '').toString().replace(/"/g, '""');
+    return /[",\n\r]/.test(s) ? `"${s}"` : s;
+  };
+
+  const rows = books.map(b =>
+    headers.map(h => escape(b[h])).join(',')
+  );
+
   const csv = [headers.join(','), ...rows].join('\r\n');
-  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `my-library-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  a.href = url;
+  a.download = `my-library-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
   URL.revokeObjectURL(url);
   showToast(`Exported ${books.length} books`);
 }
@@ -920,60 +1100,65 @@ async function exportCSV() {
 // ══════════════════════════════════
 //  CSV IMPORT
 // ══════════════════════════════════
+let pendingImport = [];
+
 function importCSV(event) {
-  const file = event.target.files[0]; if (!file) return;
+  const file = event.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
   reader.onload = async e => {
-    const text = e.target.result.replace(/^\uFEFF/,'');
+    const text = e.target.result.replace(/^\uFEFF/, '');
     const lines = text.split(/\r?\n/).filter(l => l.trim());
     if (lines.length < 2) { showToast('CSV appears empty'); return; }
 
     const headers = parseCSVRow(lines[0]).map(h => h.toLowerCase().trim());
     const idx = h => headers.indexOf(h);
-    const VALID_FMT = ['physical','digital','both','not-owned'];
-    const VALID_STA = ['read','reading','not-read'];
+
+    const VALID_STATUSES = ['read', 'started', 'owned', 'not-owned'];
 
     pendingImport = [];
+
     for (let i = 1; i < lines.length; i++) {
       const cols = parseCSVRow(lines[i]);
-      const title = (cols[idx('title')]||'').trim(); if (!title) continue;
-      const fmt = (cols[idx('format')]||'').trim().toLowerCase();
-      const sta = (cols[idx('status')]||'').trim().toLowerCase();
-      pendingImport.push({
+      const title = (cols[idx('title')] || '').trim();
+      if (!title) continue;
+
+      const status = (cols[idx('status')] || '').trim().toLowerCase();
+      const book = {
         title,
-        author:    (cols[idx('author')]   ||'').trim(),
-        publisher: (cols[idx('publisher')]||'').trim(),
-        year:      (cols[idx('year')]     ||'').trim(),
-        notes:     (cols[idx('notes')]    ||'').trim(),
-        format:    VALID_FMT.includes(fmt) ? fmt : 'physical',
-        status:    VALID_STA.includes(sta) ? sta : 'not-read',
-        addedAt:   Date.now(), startedAt: null, finishedAt: null
-      });
+        author:    (cols[idx('author')]    || '').trim(),
+        publisher: (cols[idx('publisher')] || '').trim(),
+        year:      (cols[idx('year')]      || '').trim(),
+        notes:     (cols[idx('notes')]     || '').trim(),
+        status:    VALID_STATUSES.includes(status) ? status : 'owned',
+        addedAt:   Date.now()
+      };
+      pendingImport.push(book);
     }
 
     const existing = await dbAll();
     const existingNorm = new Set(existing.map(b => normalize(b.title)));
+
     const newBooks = pendingImport.filter(b => !existingNorm.has(normalize(b.title)));
     const dupBooks = pendingImport.filter(b =>  existingNorm.has(normalize(b.title)));
 
     document.getElementById('importSummary').textContent =
       `${newBooks.length} new · ${dupBooks.length} already in library (will be skipped)`;
 
+    const statusLabels = { read: '✓ Read', started: '▷ Started', owned: '📚 Owned', 'not-owned': '○ Not Owned' };
     document.getElementById('importPreview').innerHTML = [
       ...newBooks.map(b => `
         <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;">
           <div>
-            <div style="font-size:0.85rem;font-weight:500">${escHtml(b.title)}</div>
-            <div style="font-size:0.75rem;color:var(--muted)">${escHtml(b.author||'—')} ${b.year?'· '+b.year:''}</div>
+            <div style="font-size:0.85rem;font-weight:500">${b.title}</div>
+            <div style="font-size:0.75rem;color:var(--muted)">${b.author || '—'} ${b.year ? '· ' + b.year : ''}</div>
           </div>
-          <div style="display:flex;gap:4px;flex-shrink:0">
-            <span class="badge badge-${b.format}">${FMT_LABELS[b.format]||b.format}</span>
-          </div>
+          <span class="badge badge-${b.status}" style="flex-shrink:0">${statusLabels[b.status]}</span>
         </div>`),
       ...dupBooks.map(b => `
         <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;opacity:0.4;">
           <div>
-            <div style="font-size:0.85rem;text-decoration:line-through">${escHtml(b.title)}</div>
+            <div style="font-size:0.85rem;text-decoration:line-through">${b.title}</div>
             <div style="font-size:0.75rem;color:var(--muted)">already in library</div>
           </div>
           <span class="badge" style="background:var(--border);flex-shrink:0">skip</span>
@@ -988,100 +1173,34 @@ function importCSV(event) {
 }
 
 function parseCSVRow(row) {
-  const result=[]; let cur='', inQ=false;
-  for (let i=0;i<row.length;i++) {
-    const c=row[i];
-    if (inQ) { if(c==='"'&&row[i+1]==='"'){cur+='"';i++;}else if(c==='"')inQ=false;else cur+=c; }
-    else { if(c==='"')inQ=true; else if(c===','){result.push(cur);cur='';}else cur+=c; }
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < row.length; i++) {
+    const c = row[i];
+    if (inQuote) {
+      if (c === '"' && row[i+1] === '"') { cur += '"'; i++; }
+      else if (c === '"') inQuote = false;
+      else cur += c;
+    } else {
+      if (c === '"') inQuote = true;
+      else if (c === ',') { result.push(cur); cur = ''; }
+      else if (c === ',') { result.push(cur); cur = ''; }
+      else cur += c;
+    }
   }
-  result.push(cur); return result;
+  result.push(cur);
+  return result;
 }
 
 async function confirmImport() {
-  if (!pendingImport.length) { closeModal('importModal'); return; }
-  for (const b of pendingImport) await dbAdd(b);
+  if (pendingImport.length === 0) { closeModal('importModal'); return; }
+  for (const book of pendingImport) await dbAdd(book);
   closeModal('importModal');
-  renderLibrary(); renderStats(); updateCount();
+  renderLibrary();
+  renderStats();
+  updateCount();
   showToast(`Imported ${pendingImport.length} books`);
   pendingImport = [];
-}
-
-// ══════════════════════════════════
-//  MANUAL LOOKUP FROM FORM
-// ══════════════════════════════════
-async function lookupFromForm() {
-  const title  = document.getElementById('f-title').value.trim();
-  const author = document.getElementById('f-author').value.trim();
-  if (!title) { showToast('Enter a title first'); return; }
-
-  const btn = document.getElementById('lookupBtn');
-  btn.textContent = '⏳'; btn.disabled = true;
-
-  const query = author ? `${title} ${author}` : title;
-  try {
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,ratings_average,ratings_count,key`;
-    const data = await (await fetch(url)).json();
-
-    if (data.docs && data.docs.length > 0) {
-      const b = data.docs[0];
-
-      // Fill in fields only if currently empty
-      if (!document.getElementById('f-author').value.trim())
-        document.getElementById('f-author').value = (b.author_name||[]).join(', ');
-      if (!document.getElementById('f-publisher').value.trim())
-        document.getElementById('f-publisher').value = (b.publisher||[])[0] || '';
-      if (!document.getElementById('f-year').value.trim())
-        document.getElementById('f-year').value = b.first_publish_year || '';
-
-      // Description
-      let description = '';
-      if (b.key) {
-        try {
-          const wd = await (await fetch(`https://openlibrary.org${b.key}.json`)).json();
-          if (wd.description) {
-            const raw = typeof wd.description === 'string' ? wd.description : (wd.description.value || '');
-            description = raw.replace(/\n/g,' ').split(/(?<=[.!?])\s+/).slice(0,3).join(' ');
-          }
-        } catch(_) {}
-      }
-
-      const descEl = document.getElementById('bookDescription');
-      if (description) { descEl.textContent = description; descEl.style.display = 'block'; }
-      else { descEl.style.display = 'none'; }
-
-      // Rating
-      const ratingEl = document.getElementById('bookGRRating');
-      if (b.ratings_average) {
-        const r = parseFloat(b.ratings_average).toFixed(1);
-        ratingEl.innerHTML = `${ratingToStars(parseFloat(r))} ${r} / 5 &nbsp;·&nbsp; ${(b.ratings_count||0).toLocaleString()} ratings on Open Library`;
-        ratingEl.style.display = 'block';
-      } else { ratingEl.style.display = 'none'; }
-
-      showToast('Book found!');
-    } else {
-      showToast('No match found — check the title');
-    }
-  } catch(e) {
-    showToast('Network error — try again');
-  }
-
-  btn.textContent = '🔍 Look up'; btn.disabled = false;
-  checkDuplicate();
-}
-
-
-function normalize(s) { return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
-function ratingToStars(r) { const f=Math.round(r); return '★'.repeat(f)+'☆'.repeat(5-f); }
-function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-async function updateCount() {
-  const books = await dbAll();
-  document.getElementById('bookCount').textContent = `${books.length} book${books.length!==1?'s':''}`;
 }
 
 // ══════════════════════════════════
