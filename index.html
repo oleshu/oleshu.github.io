@@ -10,6 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
     --ink: #1a1208;
@@ -257,7 +258,6 @@
   .badge-owned { background: var(--ink); color: var(--parchment); }
   .badge-not-owned { background: var(--rust); color: #fff; }
   .badge-year { background: var(--cream); color: var(--muted); border: 1px solid var(--border); }
-  .rating-stars { font-size: 0.7rem; color: var(--gold); }
 
   /* ── LIBRARY FILTERS ── */
   .filter-bar {
@@ -435,7 +435,6 @@
   .modal-actions { display: flex; gap: 8px; margin-top: 14px; }
   .modal-actions .btn { margin-bottom: 0; }
 
-  /* detail view fields */
   .detail-field { margin-bottom: 10px; }
   .detail-field .lbl {
     font-family: 'DM Mono', monospace;
@@ -517,10 +516,6 @@
     <button class="btn btn-secondary" onclick="exportCSV()" style="margin-bottom:8px">↓ Export to CSV</button>
     <button class="btn btn-secondary" onclick="document.getElementById('csvFileInput').click()">↑ Import from CSV</button>
     <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(event)">
-    <p style="font-size:0.72rem;color:var(--muted);margin-top:8px;line-height:1.5;">
-      CSV columns: <span style="font-family:'DM Mono',monospace">title, author, publisher, year, notes, status</span><br>
-      Status values: <span style="font-family:'DM Mono',monospace">read · started · owned · not-owned</span>
-    </p>
   </div>
 </div>
 
@@ -553,44 +548,24 @@
   <div class="modal">
     <div class="modal-handle"></div>
     <h2 id="modalTitle">Add Book</h2>
-
-    <div id="duplicateWarning" class="duplicate-banner" style="display:none">
-      📚 You already have this book in your library!
-    </div>
-
+    <div id="duplicateWarning" class="duplicate-banner" style="display:none">📚 Already in library!</div>
     <div id="bookDescription" class="description" style="display:none"></div>
     <div id="bookGRRating" class="gr-rating" style="display:none"></div>
 
-    <div class="form-group">
-      <label>Title *</label>
-      <input type="text" id="f-title" placeholder="Book title" oninput="checkDuplicate()">
-    </div>
-    <div class="form-group">
-      <label>Author *</label>
-      <input type="text" id="f-author" placeholder="Author name">
-    </div>
-    <div class="form-group">
-      <label>Publisher</label>
-      <input type="text" id="f-publisher" placeholder="Publisher (optional)">
-    </div>
-    <div class="form-group">
-      <label>Year</label>
-      <input type="number" id="f-year" placeholder="Year (optional)" min="1000" max="2099">
-    </div>
-    <div class="form-group">
-      <label>Notes</label>
-      <textarea id="f-notes" placeholder="Your notes…"></textarea>
-    </div>
+    <div class="form-group"><label>Title *</label><input type="text" id="f-title" placeholder="Book title" oninput="checkDuplicate()"></div>
+    <div class="form-group"><label>Author *</label><input type="text" id="f-author" placeholder="Author name"></div>
+    <div class="form-group"><label>Publisher</label><input type="text" id="f-publisher" placeholder="Publisher (optional)"></div>
+    <div class="form-group"><label>Year</label><input type="number" id="f-year" placeholder="Year" min="1000" max="2099"></div>
+    <div class="form-group"><label>Notes</label><textarea id="f-notes" placeholder="Your notes…"></textarea></div>
     <div class="form-group">
       <label>Status</label>
       <div class="status-grid">
         <div class="status-btn" data-status="read" onclick="selectStatus(this)">✓ Read</div>
         <div class="status-btn" data-status="started" onclick="selectStatus(this)">▷ Started</div>
-        <div class="status-btn" data-status="owned" onclick="onclick=selectStatus(this)">📚 Owned</div>
+        <div class="status-btn" data-status="owned" onclick="selectStatus(this)">📚 Owned</div>
         <div class="status-btn" data-status="not-owned" onclick="selectStatus(this)">○ Not Owned</div>
       </div>
     </div>
-
     <div style="display:flex;gap:8px;margin-top:6px;">
       <button class="btn btn-secondary" style="flex:1" onclick="closeModal('addModal')">Cancel</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveBook()">Save Book</button>
@@ -601,9 +576,6 @@
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════
-//  DB
-// ══════════════════════════════════
 let db;
 let currentFilter = 'all';
 let editingId = null;
@@ -659,9 +631,6 @@ function dbDelete(id) {
   });
 }
 
-// ══════════════════════════════════
-//  NAV
-// ══════════════════════════════════
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -671,100 +640,83 @@ function showView(name) {
   if (name === 'stats') renderStats();
 }
 
-// ══════════════════════════════════
-//  CAMERA (Patched for Stability)
-// ══════════════════════════════════
 async function toggleCamera() {
-  if (cameraActive) {
-    stopCamera();
-  } else {
-    await startCamera();
-  }
+  if (cameraActive) stopCamera(); else await startCamera();
 }
 
 async function startCamera() {
-  // Relaxed resolution rules for older Android 9 hardware
-  const constraints = {
-    video: { 
-      facingMode: 'environment',
-      width: { ideal: 640 }, 
-      height: { ideal: 480 } 
-    }
-  };
-
   try {
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const video = document.getElementById('videoEl');
-    video.srcObject = stream;
-    video.style.display = 'block';
-    document.getElementById('scanPlaceholder').style.display = 'none';
-    document.getElementById('cameraBtn').textContent = 'Stop Camera';
-    document.getElementById('captureBtn').disabled = false;
-    cameraActive = true;
-    setScanStatus('');
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 960 } }
+    });
   } catch (e) {
-    // Ultimate fallback if ideal environment camera fails
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.getElementById('videoEl');
-      video.srcObject = stream;
-      video.style.display = 'block';
-      document.getElementById('scanPlaceholder').style.display = 'none';
-      document.getElementById('cameraBtn').textContent = 'Stop Camera';
-      document.getElementById('captureBtn').disabled = false;
-      cameraActive = true;
-      setScanStatus('');
     } catch (err) {
-      setScanStatus('Camera access denied or unsupported. Use "Add Manually".');
+      setScanStatus('Camera access denied or unsupported.');
+      return;
     }
   }
+  const video = document.getElementById('videoEl');
+  video.srcObject = stream;
+  video.style.display = 'block';
+  document.getElementById('scanPlaceholder').style.display = 'none';
+  document.getElementById('cameraBtn').textContent = 'Stop Camera';
+  document.getElementById('captureBtn').disabled = false;
+  cameraActive = true;
+  setScanStatus('');
 }
 
 function stopCamera() {
   if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-  const video = document.getElementById('videoEl');
-  video.style.display = 'none';
+  document.getElementById('videoEl').style.display = 'none';
   document.getElementById('scanPlaceholder').style.display = 'block';
   document.getElementById('cameraBtn').textContent = 'Start Camera';
   document.getElementById('captureBtn').disabled = true;
   cameraActive = false;
 }
 
+// ══════════════════════════════════
+//  UPDATED TEXT CAPTURE (Cross-Platform)
+// ══════════════════════════════════
 async function captureAndSearch() {
   const video = document.getElementById('videoEl');
   const canvas = document.getElementById('captureCanvas');
-  canvas.width = video.videoWidth || 640;
-  canvas.height = video.videoHeight || 480;
-  canvas.getContext('2d').drawImage(video, 0, 0);
+  const width = video.videoWidth || 640;
+  const height = video.videoHeight || 480;
+  canvas.width = width;
+  canvas.height = height;
+  
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, width, height);
 
-  setScanStatus('<span class="loader"></span> Reading text from image…');
+  setScanStatus('<span class="loader"></span> OCR Engine Initializing…');
   document.getElementById('captureBtn').disabled = true;
 
   try {
-    let extractedText = '';
-    
-    // Wrapped in a safe try/catch block to completely prevent crashes on Android 9
-    try {
-      if (window.TextDetector) {
-        const detector = new window.TextDetector();
-        const results = await detector.detect(canvas);
-        extractedText = results.map(r => r.rawValue).join(' ');
+    // Process text locally via Tesseract.js WebAssembly (works on iOS and Android)
+    const result = await Tesseract.recognize(canvas, 'eng', {
+      logger: m => {
+        if (m.status === 'recognizing') {
+          setScanStatus(`<span class="loader"></span> Scanning Text: ${Math.round(m.progress * 100)}%`);
+        }
       }
-    } catch (detectorError) {
-      console.log("TextDetector failed or not supported natively.");
-    }
+    });
 
-    if (extractedText.length > 3) {
-      const lines = extractedText.split(/\n|\|/).map(s => s.trim()).filter(s => s.length > 2);
-      setScanStatus('<span class="loader"></span> Searching book database…');
-      const query = lines.slice(0, 3).join(' ');
+    const extractedText = result.data.text || '';
+    
+    if (extractedText.trim().length > 3) {
+      setScanStatus('<span class="loader"></span> Searching database…');
+      // Clean up string, grab first 3 text segments found on cover
+      const query = extractedText.split('\n').map(s => s.trim()).filter(s => s.length > 2).slice(0, 3).join(' ');
       await searchOpenLibrary(query, true);
     } else {
-      setScanStatus('⚠ Text detection not supported or failed in this browser. Please use "Add Manually".');
+      setScanStatus('⚠ No text detected. Adjust lighting and try again.');
       document.getElementById('captureBtn').disabled = false;
     }
   } catch (e) {
-    setScanStatus('⚠ Could not read text. Please use "Add Manually".');
+    console.error(e);
+    setScanStatus('⚠ OCR Processing error. Please fill in manually.');
     document.getElementById('captureBtn').disabled = false;
   }
 }
@@ -773,9 +725,6 @@ function setScanStatus(html) {
   document.getElementById('scanStatus').innerHTML = html;
 }
 
-// ══════════════════════════════════
-//  OPEN LIBRARY SEARCH
-// ══════════════════════════════════
 async function searchOpenLibrary(query, fromScan = false) {
   try {
     const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,description,ratings_average,ratings_count,key`;
@@ -797,32 +746,25 @@ async function searchOpenLibrary(query, fromScan = false) {
           const workRes = await fetch(`https://openlibrary.org${book.key}.json`);
           const workData = await workRes.json();
           if (workData.description) {
-            const raw = typeof workData.description === 'string'
-              ? workData.description
-              : workData.description.value || '';
-            const sentences = raw.replace(/\n/g, ' ').split(/(?<=[.!?])\s+/);
-            description = sentences.slice(0, 3).join(' ');
+            const raw = typeof workData.description === 'string' ? workData.description : workData.description.value || '';
+            description = raw.split(/(?<=[.!?])\s+/).slice(0, 3).join(' ');
           }
         } catch (_) {}
       }
 
-      if (fromScan) setScanStatus('✓ Book identified!');
+      if (fromScan) setScanStatus('✓ Book found!');
       openAddModal({ title, author, publisher, year: String(year), description, rating, ratingsCount });
     } else {
-      if (fromScan) setScanStatus('⚠ Could not identify book. Fill in manually.');
+      if (fromScan) setScanStatus('⚠ Book not identified. Tweak text manually.');
       openAddModal({});
     }
   } catch (e) {
     if (fromScan) setScanStatus('⚠ Network error. Fill in manually.');
     openAddModal({});
   }
-
   if (fromScan) document.getElementById('captureBtn').disabled = false;
 }
 
-// ══════════════════════════════════
-//  ADD / EDIT MODAL
-// ══════════════════════════════════
 function openManualAdd() {
   editingId = null;
   openAddModal({});
@@ -838,27 +780,20 @@ function openAddModal(data) {
   document.getElementById('f-notes').value = data.notes || '';
 
   const descEl = document.getElementById('bookDescription');
-  if (data.description) {
-    descEl.textContent = data.description;
-    descEl.style.display = 'block';
-  } else {
-    descEl.style.display = 'none';
-  }
+  if (data.description) { descEl.textContent = data.description; descEl.style.display = 'block'; } else { descEl.style.display = 'none'; }
 
   const ratingEl = document.getElementById('bookGRRating');
   if (data.rating) {
-    const stars = ratingToStars(parseFloat(data.rating));
-    ratingEl.innerHTML = `${stars} ${data.rating} / 5 &nbsp;·&nbsp; ${data.ratingsCount?.toLocaleString() || ''} ratings on Open Library`;
+    ratingEl.innerHTML = `★ ${data.rating} / 5 · ${data.ratingsCount?.toLocaleString() || 0} ratings on Open Library`;
     ratingEl.style.display = 'block';
   } else {
     ratingEl.style.display = 'none';
   }
 
   document.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
-  if (data.status) {
-    const btn = document.querySelector(`.status-btn[data-status="${data.status}"]`);
-    if (btn) btn.classList.add('sel-' + data.status.replace('-',''));
-  }
+  const initialStatus = data.status || 'owned';
+  const btn = document.querySelector(`.status-btn[data-status="${initialStatus}"]`);
+  if (btn) btn.classList.add('sel-' + initialStatus.replace('-',''));
 
   document.getElementById('duplicateWarning').style.display = 'none';
   checkDuplicate();
@@ -883,7 +818,6 @@ async function openEditModal(book) {
     const btn = document.querySelector(`.status-btn[data-status="${book.status}"]`);
     if (btn) btn.classList.add('sel-' + book.status.replace('-',''));
   }
-
   document.getElementById('addModal').classList.add('open');
 }
 
@@ -917,8 +851,7 @@ async function saveBook() {
   if (!title) { showToast('Title is required'); return; }
 
   const book = {
-    title,
-    author,
+    title, author,
     publisher: document.getElementById('f-publisher').value.trim(),
     year: document.getElementById('f-year').value.trim(),
     notes: document.getElementById('f-notes').value.trim(),
@@ -940,9 +873,6 @@ async function saveBook() {
   updateCount();
 }
 
-// ══════════════════════════════════
-//  DETAIL MODAL
-// ══════════════════════════════════
 function openDetailModal(book) {
   currentDetailId = book.id;
   const statusLabels = { read: '✓ Read', started: '▷ Started', owned: '📚 Owned', 'not-owned': '○ Not Owned' };
@@ -962,10 +892,7 @@ function openDetailModal(book) {
 async function openEditFromDetail() {
   const books = await dbAll();
   const book = books.find(b => b.id === currentDetailId);
-  if (book) {
-    closeModal('detailModal');
-    openEditModal(book);
-  }
+  if (book) { closeModal('detailModal'); openEditModal(book); }
 }
 
 async function deleteCurrentBook() {
@@ -982,9 +909,6 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
 
-// ══════════════════════════════════
-//  LIBRARY RENDER
-// ══════════════════════════════════
 function setFilter(el) {
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
@@ -1006,7 +930,7 @@ async function renderLibrary() {
   filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
   if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty-state"><p>No books found.<br>Scan or add one to get started.</p></div>`;
+    list.innerHTML = `<div class="empty-state"><p>No books found.</p></div>`;
     return;
   }
 
@@ -1024,9 +948,6 @@ async function renderLibrary() {
   `).join('');
 }
 
-// ══════════════════════════════════
-//  STATS
-// ══════════════════════════════════
 async function renderStats() {
   const books = await dbAll();
   document.getElementById('s-total').textContent = books.length;
@@ -1049,14 +970,6 @@ async function renderStats() {
   ` : '';
 }
 
-// ══════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════
-function ratingToStars(r) {
-  const full = Math.round(r);
-  return '★'.repeat(full) + '☆'.repeat(5 - full);
-}
-
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1069,23 +982,15 @@ async function updateCount() {
   document.getElementById('bookCount').textContent = `${books.length} book${books.length !== 1 ? 's' : ''}`;
 }
 
-// ══════════════════════════════════
-//  CSV EXPORT
-// ══════════════════════════════════
 async function exportCSV() {
   const books = await dbAll();
   if (books.length === 0) { showToast('No books to export'); return; }
-
   const headers = ['title', 'author', 'publisher', 'year', 'notes', 'status'];
   const escape = v => {
     const s = (v || '').toString().replace(/"/g, '""');
     return /[",\n\r]/.test(s) ? `"${s}"` : s;
   };
-
-  const rows = books.map(b =>
-    headers.map(h => escape(b[h])).join(',')
-  );
-
+  const rows = books.map(b => headers.map(h => escape(b[h])).join(','));
   const csv = [headers.join(','), ...rows].join('\r\n');
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -1094,14 +999,9 @@ async function exportCSV() {
   a.download = `my-library-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast(`Exported ${books.length} books`);
 }
 
-// ══════════════════════════════════
-//  CSV IMPORT
-// ══════════════════════════════════
 let pendingImport = [];
-
 function importCSV(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -1109,108 +1009,56 @@ function importCSV(event) {
   reader.onload = async e => {
     const text = e.target.result.replace(/^\uFEFF/, '');
     const lines = text.split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) { showToast('CSV appears empty'); return; }
+    if (lines.length < 2) { showToast('CSV is empty'); return; }
 
     const headers = parseCSVRow(lines[0]).map(h => h.toLowerCase().trim());
     const idx = h => headers.indexOf(h);
-
-    const VALID_STATUSES = ['read', 'started', 'owned', 'not-owned'];
-
     pendingImport = [];
 
     for (let i = 1; i < lines.length; i++) {
       const cols = parseCSVRow(lines[i]);
       const title = (cols[idx('title')] || '').trim();
       if (!title) continue;
-
-      const status = (cols[idx('status')] || '').trim().toLowerCase();
-      const book = {
+      pendingImport.push({
         title,
-        author:    (cols[idx('author')]    || '').trim(),
+        author: (cols[idx('author')] || '').trim(),
         publisher: (cols[idx('publisher')] || '').trim(),
-        year:      (cols[idx('year')]      || '').trim(),
-        notes:     (cols[idx('notes')]     || '').trim(),
-        status:    VALID_STATUSES.includes(status) ? status : 'owned',
-        addedAt:   Date.now()
-      };
-      pendingImport.push(book);
+        year: (cols[idx('year')] || '').trim(),
+        notes: (cols[idx('notes')] || '').trim(),
+        status: ['read', 'started', 'owned', 'not-owned'].includes((cols[idx('status')] || '').trim().toLowerCase()) ? (cols[idx('status')] || '').trim().toLowerCase() : 'owned',
+        addedAt: Date.now()
+      });
     }
 
     const existing = await dbAll();
     const existingNorm = new Set(existing.map(b => normalize(b.title)));
-
     const newBooks = pendingImport.filter(b => !existingNorm.has(normalize(b.title)));
-    const dupBooks = pendingImport.filter(b =>  existingNorm.has(normalize(b.title)));
-
-    document.getElementById('importSummary').textContent =
-      `${newBooks.length} new · ${dupBooks.length} already in library (will be skipped)`;
-
-    const statusLabels = { read: '✓ Read', started: '▷ Started', owned: '📚 Owned', 'not-owned': '○ Not Owned' };
-    document.getElementById('importPreview').innerHTML = [
-      ...newBooks.map(b => `
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;">
-          <div>
-            <div style="font-size:0.85rem;font-weight:500">${b.title}</div>
-            <div style="font-size:0.75rem;color:var(--muted)">${b.author || '—'} ${b.year ? '· ' + b.year : ''}</div>
-          </div>
-          <span class="badge badge-${b.status}" style="flex-shrink:0">${statusLabels[b.status]}</span>
-        </div>`),
-      ...dupBooks.map(b => `
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;opacity:0.4;">
-          <div>
-            <div style="font-size:0.85rem;text-decoration:line-through">${b.title}</div>
-            <div style="font-size:0.75rem;color:var(--muted)">already in library</div>
-          </div>
-          <span class="badge" style="background:var(--border);flex-shrink:0">skip</span>
-        </div>`)
-    ].join('');
-
+    
     pendingImport = newBooks;
-    document.getElementById('importModal').classList.add('open');
-    event.target.value = '';
+    await confirmImport();
   };
   reader.readAsText(file, 'UTF-8');
 }
 
 function parseCSVRow(row) {
-  const result = [];
-  let cur = '', inQuote = false;
+  const result = []; let cur = '', inQuote = false;
   for (let i = 0; i < row.length; i++) {
     const c = row[i];
-    if (inQuote) {
-      if (c === '"' && row[i+1] === '"') { cur += '"'; i++; }
-      else if (c === '"') inQuote = false;
-      else cur += c;
-    } else {
-      if (c === '"') inQuote = true;
-      else if (c === ',') { result.push(cur); cur = ''; }
-      else if (c === ',') { result.push(cur); cur = ''; }
-      else cur += c;
-    }
+    if (inQuote) { if (c === '"' && row[i+1] === '"') { cur += '"'; i++; } else if (c === '"') inQuote = false; else cur += c; }
+    else { if (c === '"') inQuote = true; else if (c === ',') { result.push(cur); cur = ''; } else cur += c; }
   }
-  result.push(cur);
-  return result;
+  result.push(cur); return result;
 }
 
 async function confirmImport() {
-  if (pendingImport.length === 0) { closeModal('importModal'); return; }
+  if (pendingImport.length === 0) return;
   for (const book of pendingImport) await dbAdd(book);
-  closeModal('importModal');
-  renderLibrary();
-  renderStats();
-  updateCount();
+  renderLibrary(); renderStats(); updateCount();
   showToast(`Imported ${pendingImport.length} books`);
   pendingImport = [];
 }
 
-// ══════════════════════════════════
-//  INIT
-// ══════════════════════════════════
-(async () => {
-  await openDB();
-  await updateCount();
-  renderLibrary();
-})();
+(async () => { await openDB(); await updateCount(); renderLibrary(); })();
 </script>
 </body>
 </html>
