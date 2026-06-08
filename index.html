@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- saved from url=(0042)file:///C:/Users/User/Downloads/index.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#1a1208">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>My Library</title>
-<link rel="manifest" href="file:///C:/Users/User/Downloads/manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com/">
-<link href="./index_files/css2" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #1a1208;
@@ -164,6 +164,18 @@
     width: 100%;
   }
   .speak-tip strong { color: var(--ink); }
+  .lang-btn {
+    padding: 7px 18px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--ink); color: var(--gold); border-color: var(--ink); }
 
   /* ── BUTTONS ── */
   .btn {
@@ -354,13 +366,13 @@
 
 <header>
   <h1>My Library</h1>
-  <span id="bookCount">99 books</span>
+  <span id="bookCount">0 books</span>
 </header>
 
 <nav>
-  <button class="active" onclick="showView(&#39;speak&#39;,this)">Speak</button>
-  <button onclick="showView(&#39;library&#39;,this)">Library</button>
-  <button onclick="showView(&#39;stats&#39;,this)">Stats</button>
+  <button class="active" onclick="showView('speak',this)">Speak</button>
+  <button onclick="showView('library',this)">Library</button>
+  <button onclick="showView('stats',this)">Stats</button>
 </nav>
 
 <!-- ═══ SPEAK VIEW ═══ -->
@@ -368,6 +380,10 @@
   <div class="speak-area">
     <button class="mic-btn" id="micBtn" onclick="toggleSpeech()">🎤</button>
     <div class="mic-hint" id="micHint">Tap to speak</div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <button class="lang-btn active" id="lang-en" onclick="setLang('en-US',this)">🇬🇧 EN</button>
+      <button class="lang-btn" id="lang-bg" onclick="setLang('bg-BG',this)">🇧🇬 BG</button>
+    </div>
     <div class="transcript-box" id="transcriptBox">Say a book title, optionally followed by "by" and the author name</div>
     <div class="speak-tip">
       <strong>Examples:</strong><br>
@@ -375,7 +391,7 @@
       "The Name of the Rose Umberto Eco"
     </div>
   </div>
-  <button class="btn btn-primary" id="lookupSpeechBtn" onclick="openAddFromSpeech()" disabled="">Look Up &amp; Add</button>
+  <button class="btn btn-primary" id="lookupSpeechBtn" onclick="openAddFromSpeech()" disabled>Look Up &amp; Add</button>
   <button class="btn btn-secondary" onclick="openManualAdd()">＋ Add Manually</button>
   <div id="speakStatus" style="margin-top:6px;font-size:0.8rem;color:var(--muted);text-align:center;min-height:20px;"></div>
 </div>
@@ -383,1022 +399,32 @@
 <!-- ═══ LIBRARY VIEW ═══ -->
 <div class="view" id="view-library">
   <div class="search-wrap">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="searchInput" placeholder="Search by title or author…" oninput="renderLibrary()">
   </div>
 
   <div class="filter-section">
     <div class="filter-label">Format</div>
     <div class="filter-bar" id="formatFilters">
-      <div class="filter-chip active" data-fmt="all" onclick="setFilter(&#39;fmt&#39;,this)">All</div>
-      <div class="filter-chip" data-fmt="physical" onclick="setFilter(&#39;fmt&#39;,this)">Physical</div>
-      <div class="filter-chip" data-fmt="digital" onclick="setFilter(&#39;fmt&#39;,this)">Digital</div>
-      <div class="filter-chip" data-fmt="both" onclick="setFilter(&#39;fmt&#39;,this)">Both</div>
-      <div class="filter-chip" data-fmt="not-owned" onclick="setFilter(&#39;fmt&#39;,this)">Not Owned</div>
+      <div class="filter-chip active" data-fmt="all" onclick="setFilter('fmt',this)">All</div>
+      <div class="filter-chip" data-fmt="physical" onclick="setFilter('fmt',this)">Physical</div>
+      <div class="filter-chip" data-fmt="digital" onclick="setFilter('fmt',this)">Digital</div>
+      <div class="filter-chip" data-fmt="both" onclick="setFilter('fmt',this)">Both</div>
+      <div class="filter-chip" data-fmt="not-owned" onclick="setFilter('fmt',this)">Not Owned</div>
     </div>
   </div>
 
   <div class="filter-section">
     <div class="filter-label">Reading Status</div>
     <div class="filter-bar" id="statusFilters">
-      <div class="filter-chip active" data-sta="all" onclick="setFilter(&#39;sta&#39;,this)">All</div>
-      <div class="filter-chip" data-sta="read" onclick="setFilter(&#39;sta&#39;,this)">Read</div>
-      <div class="filter-chip" data-sta="reading" onclick="setFilter(&#39;sta&#39;,this)">Reading</div>
-      <div class="filter-chip" data-sta="not-read" onclick="setFilter(&#39;sta&#39;,this)">Not Read</div>
+      <div class="filter-chip active" data-sta="all" onclick="setFilter('sta',this)">All</div>
+      <div class="filter-chip" data-sta="read" onclick="setFilter('sta',this)">Read</div>
+      <div class="filter-chip" data-sta="reading" onclick="setFilter('sta',this)">Reading</div>
+      <div class="filter-chip" data-sta="not-read" onclick="setFilter('sta',this)">Not Read</div>
     </div>
   </div>
 
-  <div id="bookList">
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;10 съвременни френски разказвачи&quot;,&quot;author&quot;:&quot;сборник&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:61})">
-      <h3>10 съвременни френски разказвачи</h3>
-      <div class="author">сборник</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Dracula&quot;,&quot;author&quot;:&quot;Bram Stoker&quot;,&quot;publisher&quot;:&quot;Penguin Books 2011&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Подарък от Михаела и Хели&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:30})">
-      <h3>Dracula</h3>
-      <div class="author">Bram Stoker</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Test Book&quot;,&quot;author&quot;:&quot;Oleg Shulev&quot;,&quot;publisher&quot;:&quot;Self-punlishing&quot;,&quot;year&quot;:&quot;2026&quot;,&quot;notes&quot;:&quot;just a test&quot;,&quot;status&quot;:&quot;owned&quot;,&quot;addedAt&quot;:1780862484697,&quot;id&quot;:1})">
-      <h3>Test Book</h3>
-      <div class="author">Oleg Shulev</div>
-      <div class="book-meta">
-        <span class="badge badge-undefined">undefined</span>
-        <span class="badge badge-owned">owned</span>
-        <span class="badge badge-year">2026</span>
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;The Eyes of the Cat&quot;,&quot;author&quot;:&quot;Moebiys &amp; Jodorowsky&quot;,&quot;publisher&quot;:&quot;Humanoids&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Подарък от Марто. Графична новела&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:33})">
-      <h3>The Eyes of the Cat</h3>
-      <div class="author">Moebiys &amp; Jodorowsky</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;zxc&quot;,&quot;author&quot;:&quot;zxc&quot;,&quot;publisher&quot;:&quot;zxc&quot;,&quot;year&quot;:&quot;2013&quot;,&quot;notes&quot;:&quot;asd&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780895169880,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:2})">
-      <h3>zxc</h3>
-      <div class="author">zxc</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        <span class="badge badge-year">2013</span>
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Абсаломе, Абсаломе!&quot;,&quot;author&quot;:&quot;Уилям Фокнър&quot;,&quot;publisher&quot;:&quot;Изд Лист 2021&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:38})">
-      <h3>Абсаломе, Абсаломе!</h3>
-      <div class="author">Уилям Фокнър</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Ако импресионистите бяха зъболекари&quot;,&quot;author&quot;:&quot;Уди Алън&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:80})">
-      <h3>Ако импресионистите бяха зъболекари</h3>
-      <div class="author">Уди Алън</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Албатросът&quot;,&quot;author&quot;:&quot;Сузън Хил&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:63})">
-      <h3>Албатросът</h3>
-      <div class="author">Сузън Хил</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Амфитеатър&quot;,&quot;author&quot;:&quot;антични анекдоти&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:88})">
-      <h3>Амфитеатър</h3>
-      <div class="author">антични анекдоти</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Бароков Концерт&quot;,&quot;author&quot;:&quot;Алехо Карпентиер&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:55})">
-      <h3>Бароков Концерт</h3>
-      <div class="author">Алехо Карпентиер</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Бедни хора&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Народна култура 1974. Пр: Лилияна Минкова&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:21})">
-      <h3>Бедни хора</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Бедни хора&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:98})">
-      <h3>Бедни хора</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Бесове&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:24})">
-      <h3>Бесове</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Братя Карамазови&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:23})">
-      <h3>Братя Карамазови</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;В профил и анфас&quot;,&quot;author&quot;:&quot;Василий Шукшин&quot;,&quot;publisher&quot;:&quot;Народна култура&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:42})">
-      <h3>В профил и анфас</h3>
-      <div class="author">Василий Шукшин</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Ваш И. У.&quot;,&quot;author&quot;:&quot;Ивлин Уо&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:58})">
-      <h3>Ваш И. У.</h3>
-      <div class="author">Ивлин Уо</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Вест за едно отвличане&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:20})">
-      <h3>Вест за едно отвличане</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Всички огньове&quot;,&quot;author&quot;:&quot;Хулио Кортасар&quot;,&quot;publisher&quot;:&quot;Христо Г. Данов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:57})">
-      <h3>Всички огньове</h3>
-      <div class="author">Хулио Кортасар</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Госпожица Антонина&quot;,&quot;author&quot;:&quot;Елиза Ожешкова&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:81})">
-      <h3>Госпожица Антонина</h3>
-      <div class="author">Елиза Ожешкова</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Градинско увеселение&quot;,&quot;author&quot;:&quot;Катрин Мансфийлд&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:84})">
-      <h3>Градинско увеселение</h3>
-      <div class="author">Катрин Мансфийлд</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Граматика на фантазията&quot;,&quot;author&quot;:&quot;Джани Родари&quot;,&quot;publisher&quot;:&quot;Изкуство и наука 1981&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:36})">
-      <h3>Граматика на фантазията</h3>
-      <div class="author">Джани Родари</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Да живееш, за да го разказваш - том 1&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:9})">
-      <h3>Да живееш, за да го разказваш - том 1</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Да живееш, за да го разказваш - том 2&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:10})">
-      <h3>Да живееш, за да го разказваш - том 2</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Дванайсет странстващи разказа&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:8})">
-      <h3>Дванайсет странстващи разказа</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Дивите палми&quot;,&quot;author&quot;:&quot;Уилям Фокнър&quot;,&quot;publisher&quot;:&quot;Изд Лист 2021&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:37})">
-      <h3>Дивите палми</h3>
-      <div class="author">Уилям Фокнър</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Елегия за мадона Фиамета&quot;,&quot;author&quot;:&quot;Джовани Бокачо&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:95})">
-      <h3>Елегия за мадона Фиамета</h3>
-      <div class="author">Джовани Бокачо</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Елмазен мой венец&quot;,&quot;author&quot;:&quot;Валентин Катаев&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:60})">
-      <h3>Елмазен мой венец</h3>
-      <div class="author">Валентин Катаев</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Епепе&quot;,&quot;author&quot;:&quot;Ференц Каринти&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:69})">
-      <h3>Епепе</h3>
-      <div class="author">Ференц Каринти</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;За любовта и други демони&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;2012 - Лъчезар Минчев, Преводач Елена Дичева&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:6})">
-      <h3>За любовта и други демони</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Записки на наивника&quot;,&quot;author&quot;:&quot;Аркадий Аверченко&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:94})">
-      <h3>Записки на наивника</h3>
-      <div class="author">Аркадий Аверченко</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Записки от мъртвия дом&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:28})">
-      <h3>Записки от мъртвия дом</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Записки от подземието Играчът на рулетка&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:22})">
-      <h3>Записки от подземието Играчът на рулетка</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;И ангелите там не смеят да пристъпят&quot;,&quot;author&quot;:&quot;Е. М. Фостър&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:70})">
-      <h3>И ангелите там не смеят да пристъпят</h3>
-      <div class="author">Е. М. Фостър</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Идиот&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:27})">
-      <h3>Идиот</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Избрани фантастични произведения - Том 2&quot;,&quot;author&quot;:&quot;Станислав Лем&quot;,&quot;publisher&quot;:&quot;Народна младеж 1988&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:51})">
-      <h3>Избрани фантастични произведения - Том 2</h3>
-      <div class="author">Станислав Лем</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Изд: Българско дружество за защита на птиците,,Подарък от Вили&quot;,&quot;author&quot;:&quot;Диди и Женка,physical,,,,&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:35})">
-      <h3>Изд: Българско дружество за защита на птиците,,Подарък от Вили</h3>
-      <div class="author">Диди и Женка,physical,,,,</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Йени&quot;,&quot;author&quot;:&quot;Сигрид Унсет&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:82})">
-      <h3>Йени</h3>
-      <div class="author">Сигрид Унсет</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Книга за снобите&quot;,&quot;author&quot;:&quot;Уилям Мейкпийс Такъри&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:65})">
-      <h3>Книга за снобите</h3>
-      <div class="author">Уилям Мейкпийс Такъри</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Когато времето беше безсмъртно&quot;,&quot;author&quot;:&quot;Роза Николова&quot;,&quot;publisher&quot;:&quot;Златно ключе, 2018&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:40})">
-      <h3>Когато времето беше безсмъртно</h3>
-      <div class="author">Роза Николова</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Кой защити Катрин Ламберт?&quot;,&quot;author&quot;:&quot;Ингеборг Древиц&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:77})">
-      <h3>Кой защити Катрин Ламберт?</h3>
-      <div class="author">Ингеборг Древиц</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Кучешко сърце&quot;,&quot;author&quot;:&quot;Михаил Булгаков&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:79})">
-      <h3>Кучешко сърце</h3>
-      <div class="author">Михаил Булгаков</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Латерната&quot;,&quot;author&quot;:&quot;Болеслав Прус&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:97})">
-      <h3>Латерната</h3>
-      <div class="author">Болеслав Прус</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Легендата за сънната долина&quot;,&quot;author&quot;:&quot;Ървин Уошингтън&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:59})">
-      <h3>Легендата за сънната долина</h3>
-      <div class="author">Ървин Уошингтън</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Луната залезе&quot;,&quot;author&quot;:&quot;Джон Стайнбек&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:67})">
-      <h3>Луната залезе</h3>
-      <div class="author">Джон Стайнбек</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Лъженерон&quot;,&quot;author&quot;:&quot;Лион Фойхвагнер&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:49})">
-      <h3>Лъженерон</h3>
-      <div class="author">Лион Фойхвагнер</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Любов по време на холера&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:4})">
-      <h3>Любов по време на холера</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Любовна диатриба срещу един седнал мъж&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:13})">
-      <h3>Любовна диатриба срещу един седнал мъж</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Макрес Избрани творби - том 1 - В лош час&quot;,&quot;author&quot;:&quot;&quot;,&quot;publisher&quot;:&quot;В лош час, Хрониката, Любов по време на холера&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:19})">
-      <h3>Макрес Избрани творби - том 1 - В лош час</h3>
-      <div class="author"></div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Метаморфозата и др&quot;,&quot;author&quot;:&quot;Франц Кафка&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Ново&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:54})">
-      <h3>Метаморфозата и др</h3>
-      <div class="author">Франц Кафка</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Метеор&quot;,&quot;author&quot;:&quot;Карел Чапек&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:93})">
-      <h3>Метеор</h3>
-      <div class="author">Карел Чапек</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Милиард години до свършека на света&quot;,&quot;author&quot;:&quot;Аркадий и Борис Стругацки&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:99})">
-      <h3>Милиард години до свършека на света</h3>
-      <div class="author">Аркадий и Борис Стругацки</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Не изпускай деня&quot;,&quot;author&quot;:&quot;Сол Белоу&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:96})">
-      <h3>Не изпускай деня</h3>
-      <div class="author">Сол Белоу</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Невероятната и тъжна история на наивната Ерендира и нейната бездушна баба&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:17})">
-      <h3>Невероятната и тъжна история на наивната Ерендира и нейната бездушна баба</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Няма оазис в червената пустиня&quot;,&quot;author&quot;:&quot;Никола Даскалов&quot;,&quot;publisher&quot;:&quot;Български бестселър, 2023&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Подарък от Кристалина&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:31})">
-      <h3>Няма оазис в червената пустиня</h3>
-      <div class="author">Никола Даскалов</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Огънят поглъща огъня&quot;,&quot;author&quot;:&quot;Евре Базен&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:74})">
-      <h3>Огънят поглъща огъня</h3>
-      <div class="author">Евре Базен</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Одисея&quot;,&quot;author&quot;:&quot;Омир&quot;,&quot;publisher&quot;:&quot;Световна класика&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:41})">
-      <h3>Одисея</h3>
-      <div class="author">Омир</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Океан&quot;,&quot;author&quot;:&quot;Пабло Неруда&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:89})">
-      <h3>Океан</h3>
-      <div class="author">Пабло Неруда</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Орфей прорицателя&quot;,&quot;author&quot;:&quot;Пламен Цонев&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:50})">
-      <h3>Орфей прорицателя</h3>
-      <div class="author">Пламен Цонев</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Осем италиански поети&quot;,&quot;author&quot;:&quot;сборник&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:76})">
-      <h3>Осем италиански поети</h3>
-      <div class="author">сборник</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Островът на делфините&quot;,&quot;author&quot;:&quot;Артър Кларк&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:46})">
-      <h3>Островът на делфините</h3>
-      <div class="author">Артър Кларк</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Очи на синьо куче&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:12})">
-      <h3>Очи на синьо куче</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Папеса Йоанна&quot;,&quot;author&quot;:&quot;Емануил Роидис&quot;,&quot;publisher&quot;:&quot;Отечествения фронт 1980&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:44})">
-      <h3>Папеса Йоанна</h3>
-      <div class="author">Емануил Роидис</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Персийски Писма&quot;,&quot;author&quot;:&quot;Монтескьо&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:92})">
-      <h3>Персийски Писма</h3>
-      <div class="author">Монтескьо</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Писма&quot;,&quot;author&quot;:&quot;Хенрих Ибсен&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:68})">
-      <h3>Писма</h3>
-      <div class="author">Хенрих Ибсен</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Писма&quot;,&quot;author&quot;:&quot;Шопен-Жорж Санд&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:71})">
-      <h3>Писма</h3>
-      <div class="author">Шопен-Жорж Санд</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Писма&quot;,&quot;author&quot;:&quot;Антон Чехов, Максим Горки&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:90})">
-      <h3>Писма</h3>
-      <div class="author">Антон Чехов, Максим Горки</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Писма до Луиз Коле&quot;,&quot;author&quot;:&quot;Гюстав Флобер&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:86})">
-      <h3>Писма до Луиз Коле</h3>
-      <div class="author">Гюстав Флобер</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Повести на Белкин&quot;,&quot;author&quot;:&quot;Александър Пушкин&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:87})">
-      <h3>Повести на Белкин</h3>
-      <div class="author">Александър Пушкин</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Погребението на Мама Гранде&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:16})">
-      <h3>Погребението на Мама Гранде</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Полеви определител на птиците&quot;,&quot;author&quot;:&quot;Lars Svensson&quot;,&quot;publisher&quot;:&quot;Илюстрации: Killian Mullarney, Dan Zetterstrom&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:34})">
-      <h3>Полеви определител на птиците</h3>
-      <div class="author">Lars Svensson</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Полковникът няма кой да му пише&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:15})">
-      <h3>Полковникът няма кой да му пише</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Португалски морски новели&quot;,&quot;author&quot;:&quot;сборник&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:48})">
-      <h3>Португалски морски новели</h3>
-      <div class="author">сборник</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;През август ще се видим&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:11})">
-      <h3>През август ще се видим</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Прекрасно лято&quot;,&quot;author&quot;:&quot;Чезаре Павез&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:72})">
-      <h3>Прекрасно лято</h3>
-      <div class="author">Чезаре Павез</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Преображението&quot;,&quot;author&quot;:&quot;Франц Кафка&quot;,&quot;publisher&quot;:&quot;Христо Г. Данов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:53})">
-      <h3>Преображението</h3>
-      <div class="author">Франц Кафка</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Препрочитайки Чехов. Френски тетрадки. Пабло Неруда&quot;,&quot;author&quot;:&quot;Иля Еринбург&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:45})">
-      <h3>Препрочитайки Чехов. Френски тетрадки. Пабло Неруда</h3>
-      <div class="author">Иля Еринбург</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Престъпление и наказание&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:26})">
-      <h3>Престъпление и наказание</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Пътешествие по Източна Европа&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:7})">
-      <h3>Пътешествие по Източна Европа</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Пътешествието на \&quot;Орла\&quot;&quot;,&quot;author&quot;:&quot;Ги дьо Мопасан&quot;,&quot;publisher&quot;:&quot;Отечество 1983&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:52})">
-      <h3>Пътешествието на "Орла"</h3>
-      <div class="author">Ги дьо Мопасан</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Разкажи ни за пуйката, Джо&quot;,&quot;author&quot;:&quot;Алан Маршал&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:78})">
-      <h3>Разкажи ни за пуйката, Джо</h3>
-      <div class="author">Алан Маршал</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Разказ на един корабокрушенец&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:14})">
-      <h3>Разказ на един корабокрушенец</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Разкази и фейлетони&quot;,&quot;author&quot;:&quot;Иля Илф, Евгений Петров&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:85})">
-      <h3>Разкази и фейлетони</h3>
-      <div class="author">Иля Илф, Евгений Петров</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Роден съм да живея в самота&quot;,&quot;author&quot;:&quot;Франц Кафка&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:56})">
-      <h3>Роден съм да живея в самота</h3>
-      <div class="author">Франц Кафка</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Санаториум \&quot;Арктур\&quot;&quot;,&quot;author&quot;:&quot;Константин Федин&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:91})">
-      <h3>Санаториум "Арктур"</h3>
-      <div class="author">Константин Федин</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Светла Личност&quot;,&quot;author&quot;:&quot;Иля Илф, Евгений Петров&quot;,&quot;publisher&quot;:&quot;Христо Г. Данков 1966&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:47})">
-      <h3>Светла Личност</h3>
-      <div class="author">Иля Илф, Евгений Петров</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Сивото кенгуру&quot;,&quot;author&quot;:&quot;Алан Маршал&quot;,&quot;publisher&quot;:&quot;Профизлат&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:66})">
-      <h3>Сивото кенгуру</h3>
-      <div class="author">Алан Маршал</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Силва&quot;,&quot;author&quot;:&quot;Веркор&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:64})">
-      <h3>Силва</h3>
-      <div class="author">Веркор</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Смъртта на времето&quot;,&quot;author&quot;:&quot;Роза Николова&quot;,&quot;publisher&quot;:&quot;Златно ключе, 2024&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:39})">
-      <h3>Смъртта на времето</h3>
-      <div class="author">Роза Николова</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Спомен за моите тъжни проститутки&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:5})">
-      <h3>Спомен за моите тъжни проститутки</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Сред митове и рифове&quot;,&quot;author&quot;:&quot;Виктор Конецки&quot;,&quot;publisher&quot;:&quot;1972. Държавно издателство&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:43})">
-      <h3>Сред митове и рифове</h3>
-      <div class="author">Виктор Конецки</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Сто години самота&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:3})">
-      <h3>Сто години самота</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Стръмни върхове&quot;,&quot;author&quot;:&quot;Георги Атанасов&quot;,&quot;publisher&quot;:&quot;Изд: Международен фестивал на планинарския филм, 2008&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Подарък от Виктор&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:32})">
-      <h3>Стръмни върхове</h3>
-      <div class="author">Георги Атанасов</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Счупеното огледало&quot;,&quot;author&quot;:&quot;Катрин Ан Портър&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:73})">
-      <h3>Счупеното огледало</h3>
-      <div class="author">Катрин Ан Портър</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Три жени&quot;,&quot;author&quot;:&quot;Роберт Музил&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:75})">
-      <h3>Три жени</h3>
-      <div class="author">Роберт Музил</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Триминутен роман&quot;,&quot;author&quot;:&quot;Хайнрих Ман&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:62})">
-      <h3>Триминутен роман</h3>
-      <div class="author">Хайнрих Ман</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Унижените и оскърбените&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:29})">
-      <h3>Унижените и оскърбените</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Хроника на една предизвестена смърт&quot;,&quot;author&quot;:&quot;Габриел Гарсия Маркес&quot;,&quot;publisher&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:18})">
-      <h3>Хроника на една предизвестена смърт</h3>
-      <div class="author">Габриел Гарсия Маркес</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-read">✓ Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Чудовището Хоклайн / Едно сомбреро пада от небето&quot;,&quot;author&quot;:&quot;Ричард Бротиган&quot;,&quot;publisher&quot;:&quot;Народна култура - Панорама&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;Битак&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500445,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:83})">
-      <h3>Чудовището Хоклайн / Едно сомбреро пада от небето</h3>
-      <div class="author">Ричард Бротиган</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  
-    <div class="book-card fmt-physical" onclick="openDetailModal({&quot;title&quot;:&quot;Юноша&quot;,&quot;author&quot;:&quot;Фьодор Достоевски&quot;,&quot;publisher&quot;:&quot;Изд: Захарий Стоянов&quot;,&quot;year&quot;:&quot;&quot;,&quot;notes&quot;:&quot;&quot;,&quot;format&quot;:&quot;physical&quot;,&quot;status&quot;:&quot;not-read&quot;,&quot;addedAt&quot;:1780896500444,&quot;startedAt&quot;:null,&quot;finishedAt&quot;:null,&quot;id&quot;:25})">
-      <h3>Юноша</h3>
-      <div class="author">Фьодор Достоевски</div>
-      <div class="book-meta">
-        <span class="badge badge-physical">📖 Physical</span>
-        <span class="badge badge-not-read">Not Read</span>
-        
-      </div>
-    </div>
-  </div>
+  <div id="bookList"></div>
 </div>
 
 <!-- ═══ STATS VIEW ═══ -->
@@ -1423,12 +449,12 @@
   <div style="margin-top:24px;">
     <p class="section-title">Data</p>
     <button class="btn btn-secondary" onclick="exportCSV()" style="margin-bottom:8px">↓ Export to CSV</button>
-    <button class="btn btn-secondary" onclick="document.getElementById(&#39;csvFileInput&#39;).click()">↑ Import from CSV</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('csvFileInput').click()">↑ Import from CSV</button>
     <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(event)">
     <p style="font-size:0.72rem;color:var(--muted);margin-top:8px;line-height:1.6;">
-      CSV columns: <span style="font-family:&#39;DM Mono&#39;,monospace">title, author, publisher, year, notes, format, status</span><br>
-      Format: <span style="font-family:&#39;DM Mono&#39;,monospace">physical · digital · both · not-owned</span><br>
-      Status: <span style="font-family:&#39;DM Mono&#39;,monospace">read · reading · not-read</span>
+      CSV columns: <span style="font-family:'DM Mono',monospace">title, author, publisher, year, notes, format, status</span><br>
+      Format: <span style="font-family:'DM Mono',monospace">physical · digital · both · not-owned</span><br>
+      Status: <span style="font-family:'DM Mono',monospace">read · reading · not-read</span>
     </p>
   </div>
 </div>
@@ -1439,7 +465,7 @@
     <div class="modal-handle"></div>
     <div id="detailContent"></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal(&#39;detailModal&#39;)">Close</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('detailModal')">Close</button>
       <button class="btn btn-primary" style="flex:1" onclick="openEditFromDetail()">Edit</button>
       <button class="btn btn-danger" style="flex:0.6" onclick="deleteCurrentBook()">Delete</button>
     </div>
@@ -1486,9 +512,9 @@
     <div class="form-group">
       <label>Format</label>
       <div class="toggle-group">
-        <div class="toggle-btn" data-fmt="physical" onclick="selectFormat(this)">📖 Physical</div>
-        <div class="toggle-btn" data-fmt="digital" onclick="selectFormat(this)">💻 Digital</div>
-        <div class="toggle-btn" data-fmt="both" onclick="selectFormat(this)">📖💻 Both</div>
+        <div class="toggle-btn" data-fmt="physical"  onclick="selectFormat(this)">📖 Physical</div>
+        <div class="toggle-btn" data-fmt="digital"   onclick="selectFormat(this)">💻 Digital</div>
+        <div class="toggle-btn" data-fmt="both"      onclick="selectFormat(this)">📖💻 Both</div>
         <div class="toggle-btn" data-fmt="not-owned" onclick="selectFormat(this)">○ Not Owned</div>
       </div>
     </div>
@@ -1497,13 +523,13 @@
       <label>Reading Status</label>
       <div class="toggle-group">
         <div class="toggle-btn" data-sta="not-read" onclick="selectStatus(this)">Not Read</div>
-        <div class="toggle-btn" data-sta="reading" onclick="selectStatus(this)">▷ Reading</div>
-        <div class="toggle-btn" data-sta="read" onclick="selectStatus(this)">✓ Read</div>
+        <div class="toggle-btn" data-sta="reading"  onclick="selectStatus(this)">▷ Reading</div>
+        <div class="toggle-btn" data-sta="read"     onclick="selectStatus(this)">✓ Read</div>
       </div>
     </div>
 
     <div style="display:flex;gap:8px;margin-top:6px;">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal(&#39;addModal&#39;)">Cancel</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('addModal')">Cancel</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveBook()">Save Book</button>
     </div>
   </div>
@@ -1517,7 +543,7 @@
     <p class="subtitle" id="importSummary"></p>
     <div id="importPreview" style="max-height:260px;overflow-y:auto;margin-bottom:14px;"></div>
     <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal(&#39;importModal&#39;)">Cancel</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('importModal')">Cancel</button>
       <button class="btn btn-primary" style="flex:1" onclick="confirmImport()">Import All</button>
     </div>
   </div>
@@ -1537,6 +563,7 @@ let currentDetailId = null;
 let recognition = null;
 let isListening = false;
 let finalTranscript = '';
+let speechLang = 'en-US';
 let pendingImport = [];
 
 function openDB() {
@@ -1585,6 +612,13 @@ function showView(name, btn) {
 // ══════════════════════════════════
 //  SPEECH TO TEXT
 // ══════════════════════════════════
+function setLang(lang, el) {
+  speechLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  recognition = null; // force re-init with new lang on next tap
+}
+
 function initSpeech() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) {
@@ -1596,7 +630,7 @@ function initSpeech() {
   recognition = new SR();
   recognition.continuous = false;
   recognition.interimResults = true;
-  recognition.lang = 'en-US';
+  recognition.lang = speechLang;
 
   recognition.onstart = () => {
     isListening = true;
@@ -2158,6 +1192,5 @@ async function updateCount() {
   initSpeech();
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
