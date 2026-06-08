@@ -10,7 +10,6 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root {
     --ink: #1a1208;
@@ -96,47 +95,77 @@
   .view.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* ── SCAN VIEW ── */
-  .scan-area {
+  /* ── VOICE INTERFACE ── */
+  .voice-panel {
     background: var(--ink);
     border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    aspect-ratio: 3/4;
-    max-height: 340px;
+    padding: 35px 20px;
+    text-align: center;
+    border: 1px solid #3a2e1e;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .lang-selector {
+    display: flex;
+    gap: 6px;
+    background: #23190e;
+    padding: 4px;
+    border-radius: 20px;
+    border: 1px solid #3a2e1e;
+  }
+  .lang-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: var(--gold);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .mic-circle {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: #23190e;
+    border: 2px solid var(--gold);
+    color: var(--gold);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px dashed #3a2e1e;
-    margin-bottom: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    outline: none;
+    box-shadow: 0 0 0 0 rgba(201, 149, 42, 0.4);
   }
-  #videoEl {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
+  .mic-circle:active { transform: scale(0.95); }
+  .mic-circle.listening {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: #fff;
+    animation: pulse 1.5s infinite;
   }
-  .scan-placeholder {
-    text-align: center;
-    color: var(--muted);
-    padding: 20px;
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 58, 42, 0.6); }
+    70% { box-shadow: 0 0 0 15px rgba(139, 58, 42, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 58, 42, 0); }
   }
-  .scan-placeholder svg { margin-bottom: 10px; opacity: 0.4; }
-  .scan-placeholder p { font-size: 0.85rem; line-height: 1.5; }
-
-  #captureCanvas { display: block; width: 100%; max-height: 150px; object-fit: contain; margin-top: 10px; border: 1px solid var(--border); background: #000; }
-
-  .scan-corner {
-    position: absolute;
-    width: 22px; height: 22px;
-    border-color: var(--gold);
-    border-style: solid;
-    opacity: 0.8;
+  .voice-status {
+    font-size: 0.85rem;
+    color: var(--parchment);
+    line-height: 1.5;
+    min-height: 44px;
+    max-width: 85%;
   }
-  .scan-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
-  .scan-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
-  .scan-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
-  .scan-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
 
   /* ── BUTTONS ── */
   .btn {
@@ -155,7 +184,6 @@
   .btn-primary:hover { background: var(--gold-light); }
   .btn-secondary { background: var(--cream); color: var(--ink); border: 1px solid var(--border); }
   .btn-danger { background: var(--rust); color: #fff; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* ── FORM ── */
   .form-group { margin-bottom: 13px; }
@@ -383,19 +411,6 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ── LOADING ── */
-  .loader {
-    display: inline-block;
-    width: 18px; height: 18px;
-    border: 2px solid var(--border);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 6px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
   .section-title {
     font-family: 'DM Mono', monospace;
     font-size: 0.65rem;
@@ -455,33 +470,31 @@
 </header>
 
 <nav>
-  <button class="active" onclick="showView('scan')">Scan</button>
+  <button class="active" onclick="showView('scan')">Voice Add</button>
   <button onclick="showView('library')">Library</button>
   <button onclick="showView('stats')">Stats</button>
 </nav>
 
 <div class="view active" id="view-scan">
-  <div class="scan-area" id="scanArea">
-    <video id="videoEl" autoplay playsinline></video>
-    <canvas id="captureCanvas"></canvas>
-    <div class="scan-corner tl"></div>
-    <div class="scan-corner tr"></div>
-    <div class="scan-corner bl"></div>
-    <div class="scan-corner br"></div>
-    <div class="scan-placeholder" id="scanPlaceholder">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
-        <path d="M3 9h18M9 21V9"/>
-      </svg>
-      <p>Tap <strong>Start Camera</strong> to scan a book cover or spine</p>
+  <div class="voice-panel">
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="setSpeechLang('en-US', this)">🇬🇧 English</button>
+      <button class="lang-btn" onclick="setSpeechLang('bg-BG', this)">🇧🇬 Български</button>
     </div>
+
+    <button id="micBtn" class="mic-circle" onclick="startVoiceSearch()">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+        <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 19v3M8 22h8"/>
+      </svg>
+    </button>
+    
+    <div id="voiceStatus" class="voice-status">Tap the microphone and speak the book title</div>
   </div>
 
-  <button class="btn btn-primary" id="cameraBtn" onclick="toggleCamera()">Start Camera</button>
-  <button class="btn btn-secondary" id="captureBtn" onclick="captureAndSearch()" disabled>Capture & Identify</button>
-  <button class="btn btn-secondary" onclick="openManualAdd()">＋ Add Manually</button>
+  <div style="text-align: center; margin: 18px 0; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing:0.05em;">— OR —</div>
 
-  <div id="scanStatus" style="margin-top:10px; font-size:0.8rem; color:var(--muted); text-align:center; min-height:20px;"></div>
+  <button class="btn btn-secondary" onclick="openManualAdd()">＋ Type Manually</button>
 </div>
 
 <div class="view" id="view-library">
@@ -516,19 +529,6 @@
     <button class="btn btn-secondary" onclick="exportCSV()" style="margin-bottom:8px">↓ Export to CSV</button>
     <button class="btn btn-secondary" onclick="document.getElementById('csvFileInput').click()">↑ Import from CSV</button>
     <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(event)">
-  </div>
-</div>
-
-<div class="modal-overlay" id="importModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <h2>Import Preview</h2>
-    <p class="subtitle" id="importSummary"></p>
-    <div id="importPreview" style="max-height:260px;overflow-y:auto;margin-bottom:14px;"></div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('importModal')">Cancel</button>
-      <button class="btn btn-primary" style="flex:1" onclick="confirmImport()">Import All</button>
-    </div>
   </div>
 </div>
 
@@ -580,8 +580,8 @@ let db;
 let currentFilter = 'all';
 let editingId = null;
 let currentDetailId = null;
-let stream = null;
-let cameraActive = false;
+let recognition = null;
+let currentSpeechLang = 'en-US';
 
 function openDB() {
   return new Promise((res, rej) => {
@@ -640,95 +640,69 @@ function showView(name) {
   if (name === 'stats') renderStats();
 }
 
-async function toggleCamera() {
-  if (cameraActive) stopCamera(); else await startCamera();
-}
-
-async function startCamera() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 960 } }
-    });
-  } catch (e) {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    } catch (err) {
-      setScanStatus('Camera access denied or unsupported.');
-      return;
-    }
+// ══════════════════════════════════
+//  SPEECH TO TEXT CODE
+// ══════════════════════════════════
+function initSpeech() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    setVoiceStatus('❌ Speech recognition not supported on this browser context.');
+    return null;
   }
-  const video = document.getElementById('videoEl');
-  video.srcObject = stream;
-  video.style.display = 'block';
-  document.getElementById('scanPlaceholder').style.display = 'none';
-  document.getElementById('cameraBtn').textContent = 'Stop Camera';
-  document.getElementById('captureBtn').disabled = false;
-  cameraActive = true;
-  setScanStatus('');
-}
-
-function stopCamera() {
-  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-  document.getElementById('videoEl').style.display = 'none';
-  document.getElementById('scanPlaceholder').style.display = 'block';
-  document.getElementById('cameraBtn').textContent = 'Start Camera';
-  document.getElementById('captureBtn').disabled = true;
-  cameraActive = false;
-}
-
-// ══════════════════════════════════
-//  UPDATED TEXT CAPTURE (Cross-Platform)
-// ══════════════════════════════════
-async function captureAndSearch() {
-  const video = document.getElementById('videoEl');
-  const canvas = document.getElementById('captureCanvas');
-  const width = video.videoWidth || 640;
-  const height = video.videoHeight || 480;
-  canvas.width = width;
-  canvas.height = height;
+  const recog = new SpeechRecognition();
+  recog.continuous = false;
+  recog.interimResults = false;
   
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, width, height);
-
-  setScanStatus('<span class="loader"></span> Reading cover text…');
-  document.getElementById('captureBtn').disabled = true;
-
-  try {
-    // Run OCR directly on the main thread to completely bypass iOS/Android Web Worker blocks
-    const result = await Tesseract.recognize(canvas, 'eng', {
-      errorHandler: err => console.log(err)
-    });
-
-    const extractedText = result.data.text || '';
-    console.log("Scanned text:", extractedText);
-    
-    // Clean up text lines
-    const cleanLines = extractedText.split('\n')
-      .map(s => s.trim())
-      .filter(s => s.length > 3 && !/^[0-9\W]+$/.test(s)); // Ignore pure numbers/symbols
-
-    if (cleanLines.length > 0) {
-      setScanStatus('<span class="loader"></span> Searching library…');
-      // Take the most distinct line (usually the title) to search
-      const query = cleanLines.slice(0, 2).join(' ');
-      await searchOpenLibrary(query, true);
+  recog.onstart = () => {
+    setVoiceStatus('🎙️ Listening... Say the book title.');
+    document.getElementById('micBtn').classList.add('listening');
+  };
+  
+  recog.onerror = (e) => {
+    if (e.error === 'not-allowed') {
+      setVoiceStatus('⚠️ Mic permission denied. Enable mic in settings.');
     } else {
-      setScanStatus('⚠ No readable words found. Try closer framing.');
-      document.getElementById('captureBtn').disabled = false;
+      setVoiceStatus('⚠️ Voice processing timed out or failed.');
     }
-  } catch (e) {
-    console.error(e);
-    setScanStatus('⚠ Engine initialization failed. Swapping to manual.');
-    document.getElementById('captureBtn').disabled = false;
-    setTimeout(() => openManualAdd(), 1500);
+  };
+  
+  recog.onend = () => {
+    document.getElementById('micBtn').classList.remove('listening');
+  };
+  
+  recog.onresult = async (event) => {
+    const text = event.results[0][0].transcript;
+    setVoiceStatus(`✨ Captured: "${text}"<br><span class="loader"></span> Querying Open Library…`);
+    await searchOpenLibrary(text);
+  };
+  
+  return recog;
+}
+
+function startVoiceSearch() {
+  if (!recognition) recognition = initSpeech();
+  if (!recognition) return;
+  
+  recognition.lang = currentSpeechLang;
+  try {
+    recognition.start();
+  } catch(e) {
+    // Session running
   }
 }
 
-function setScanStatus(html) {
-  document.getElementById('scanStatus').innerHTML = html;
+function setSpeechLang(lang, btn) {
+  currentSpeechLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  setVoiceStatus(`Ready to listen in ${lang === 'bg-BG' ? 'Bulgarian' : 'English'}`);
 }
 
-async function searchOpenLibrary(query, fromScan = false) {
+function setVoiceStatus(html) {
+  document.getElementById('voiceStatus').innerHTML = html;
+}
+
+async function searchOpenLibrary(query) {
   try {
     const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=1&fields=title,author_name,publisher,first_publish_year,description,ratings_average,ratings_count,key`;
     const res = await fetch(url);
@@ -755,17 +729,16 @@ async function searchOpenLibrary(query, fromScan = false) {
         } catch (_) {}
       }
 
-      if (fromScan) setScanStatus('✓ Book found!');
+      setVoiceStatus('✓ Book identified!');
       openAddModal({ title, author, publisher, year: String(year), description, rating, ratingsCount });
     } else {
-      if (fromScan) setScanStatus('⚠ Book not identified. Tweak text manually.');
-      openAddModal({});
+      setVoiceStatus('⚠ No precise online match found. Opening form for adjustments.');
+      openAddModal({ title: query });
     }
   } catch (e) {
-    if (fromScan) setScanStatus('⚠ Network error. Fill in manually.');
-    openAddModal({});
+    setVoiceStatus('⚠ Network timeout. Opening layout manually.');
+    openAddModal({ title: query });
   }
-  if (fromScan) document.getElementById('captureBtn').disabled = false;
 }
 
 function openManualAdd() {
@@ -874,6 +847,7 @@ async function saveBook() {
   closeModal('addModal');
   renderLibrary();
   updateCount();
+  setVoiceStatus('Tap the microphone and speak the book title');
 }
 
 function openDetailModal(book) {
@@ -993,75 +967,4 @@ async function exportCSV() {
     const s = (v || '').toString().replace(/"/g, '""');
     return /[",\n\r]/.test(s) ? `"${s}"` : s;
   };
-  const rows = books.map(b => headers.map(h => escape(b[h])).join(','));
-  const csv = [headers.join(','), ...rows].join('\r\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `my-library-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-let pendingImport = [];
-function importCSV(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async e => {
-    const text = e.target.result.replace(/^\uFEFF/, '');
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) { showToast('CSV is empty'); return; }
-
-    const headers = parseCSVRow(lines[0]).map(h => h.toLowerCase().trim());
-    const idx = h => headers.indexOf(h);
-    pendingImport = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      const cols = parseCSVRow(lines[i]);
-      const title = (cols[idx('title')] || '').trim();
-      if (!title) continue;
-      pendingImport.push({
-        title,
-        author: (cols[idx('author')] || '').trim(),
-        publisher: (cols[idx('publisher')] || '').trim(),
-        year: (cols[idx('year')] || '').trim(),
-        notes: (cols[idx('notes')] || '').trim(),
-        status: ['read', 'started', 'owned', 'not-owned'].includes((cols[idx('status')] || '').trim().toLowerCase()) ? (cols[idx('status')] || '').trim().toLowerCase() : 'owned',
-        addedAt: Date.now()
-      });
-    }
-
-    const existing = await dbAll();
-    const existingNorm = new Set(existing.map(b => normalize(b.title)));
-    const newBooks = pendingImport.filter(b => !existingNorm.has(normalize(b.title)));
-    
-    pendingImport = newBooks;
-    await confirmImport();
-  };
-  reader.readAsText(file, 'UTF-8');
-}
-
-function parseCSVRow(row) {
-  const result = []; let cur = '', inQuote = false;
-  for (let i = 0; i < row.length; i++) {
-    const c = row[i];
-    if (inQuote) { if (c === '"' && row[i+1] === '"') { cur += '"'; i++; } else if (c === '"') inQuote = false; else cur += c; }
-    else { if (c === '"') inQuote = true; else if (c === ',') { result.push(cur); cur = ''; } else cur += c; }
-  }
-  result.push(cur); return result;
-}
-
-async function confirmImport() {
-  if (pendingImport.length === 0) return;
-  for (const book of pendingImport) await dbAdd(book);
-  renderLibrary(); renderStats(); updateCount();
-  showToast(`Imported ${pendingImport.length} books`);
-  pendingImport = [];
-}
-
-(async () => { await openDB(); await updateCount(); renderLibrary(); })();
-</script>
-</body>
-</html>
+  const rows = books.map(b => headers.map(h => escape(b
